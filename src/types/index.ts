@@ -1,0 +1,82 @@
+/**
+ * Shared Type Definitions
+ * Used across main process and renderer
+ */
+
+// Wallpaper types
+export interface WallpaperState {
+  currentPath: string
+  schedule?: {
+    enabled: boolean
+    times: Array<{
+      time: string
+      wallpaperPath: string
+    }>
+  }
+}
+
+// Theme types
+export type ThemeMode = 'light' | 'dark'
+export interface ThemeState {
+  mode: ThemeMode
+  accentColor: string
+}
+
+// Taskbar types
+export interface TaskbarState {
+  position: 'top' | 'bottom' | 'left' | 'right'
+  transparency: boolean
+  color?: string
+  size: 'small' | 'medium' | 'large'
+  visibility: boolean
+  autoHide: boolean
+}
+
+// Keyboard types
+export interface KeyboardShortcut {
+  id: string
+  name: string
+  description: string
+  keys: string
+  app: string
+  category: string
+}
+
+// Profile types
+export interface Profile {
+  id: string
+  name: string
+  description?: string
+  wallpaper?: string
+  taskbar?: Partial<TaskbarState>
+  theme?: ThemeState
+  shortcuts?: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+// App state (Zustand store)
+export interface AppState {
+  version: string
+  wallpaper: WallpaperState
+  theme: ThemeState
+  taskbar: TaskbarState
+  profiles: Profile[]
+  selectedProfile?: string
+}
+
+// IPC Response types
+export interface IpcResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+// Windows API integration types
+export interface WindowsRegistryEntry {
+  hive: string
+  path: string
+  key: string
+  value?: unknown
+  type?: 'string' | 'dword' | 'binary'
+}

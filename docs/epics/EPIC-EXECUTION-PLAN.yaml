@@ -1,0 +1,714 @@
+---
+# EPIC EXECUTION PLAN — Personalização SO v1.0 MVP
+# Document Version: 1.0
+# Created: 2026-04-27
+# Status: Ready for Development
+# Framework: Synkra AIOX
+
+project:
+  name: "Personalização SO — Windows 11 Customization Hub"
+  version: "1.0 (MVP)"
+  target_release: "Q3 2026"
+  vision: "Centralized, visual, and intuitive desktop application for Windows 11 customization"
+
+epics:
+  # ============================================================================
+  # EPIC-0: APPLICATION FOUNDATION & INFRASTRUCTURE (CRITICAL)
+  # ============================================================================
+  - id: "EPIC-0"
+    name: "Application Foundation & Infrastructure"
+    priority: "CRITICAL"
+    status: "Pending"
+    phase: "Phase 0 (Setup)"
+    blocks: ["EPIC-1", "EPIC-2", "EPIC-3", "EPIC-4", "EPIC-5"]
+    description: |
+      Establish complete development environment, project structure, and technical foundation.
+      All other epics depend on this completing successfully.
+
+    acceptance_criteria:
+      - "Electron + React + TypeScript project initialized and builds to single .exe"
+      - "Git repository initialized with CI/CD pipeline (GitHub Actions)"
+      - "Zustand state management integrated and tested"
+      - "Tailwind CSS dark mode configured"
+      - "Windows API integration stubs in place (node-ffi, windows-registry)"
+      - "Development environment runnable: npm run dev works on Windows 11"
+      - "All linting (ESLint), type checking (TypeScript), and tests pass"
+      - "Documentation: Architecture.md, Setup Guide, API stubs documented"
+
+    technical_approach:
+      runtime: "Electron 28+"
+      frontend: "React 18 + TypeScript"
+      styling: "Tailwind CSS + Dark Mode"
+      state_management: "Zustand"
+      build_tool: "Vite"
+      windows_api: "node-ffi, windows-registry"
+      storage: "JSON files (%APPDATA%)"
+
+    deliverables:
+      - path: "packages/main/src/main.ts"
+        description: "Electron main process + IPC handlers"
+      - path: "packages/renderer/src/App.tsx"
+        description: "React app shell with sidebar navigation"
+      - path: "src/services/"
+        description: "Service layer stubs (Wallpaper, Registry, Profile, Taskbar)"
+      - path: "docs/architecture/ARCHITECTURE.md"
+        description: "High-level system design"
+      - path: ".github/workflows/build.yml"
+        description: "CI/CD pipeline for builds"
+
+    dependencies:
+      - "Node.js 18+"
+      - "GitHub repository access"
+      - "Windows 11 development machine"
+
+    estimated_effort:
+      story_points: 21
+      timeline: "Week 1-2"
+      team_size: 1
+      roles: ["@dev (Dex)", "@architect (Aria)"]
+
+    risks:
+      - risk: "Electron + Vite compatibility issues"
+        probability: "Medium"
+        mitigation: "Use validated template (electron-vite starter)"
+      - risk: "Windows API learning curve"
+        probability: "Medium"
+        mitigation: "Spike research on node-ffi usage patterns"
+
+    success_metrics:
+      - "Application starts in <2 seconds"
+      - "Hot reload works in dev mode"
+      - "Zero TypeScript errors"
+      - "Build produces single executable <150MB"
+
+  # ============================================================================
+  # EPIC-1: WALLPAPER MANAGEMENT SYSTEM (HIGH)
+  # ============================================================================
+  - id: "EPIC-1"
+    name: "Wallpaper Management System"
+    priority: "HIGH"
+    status: "Pending"
+    phase: "Phase 1 (MVP)"
+    dependencies: ["EPIC-0"]
+    blocks: ["EPIC-3"]
+    description: |
+      Complete wallpaper management with static images, time-based scheduling,
+      and dynamic rotation. Foundation for profile system.
+
+    features:
+      - "FR-WP-001: Static Wallpaper Selection"
+      - "FR-WP-003: Time-Based Wallpaper Scheduling"
+      - "FR-WP-004: Dynamic Wallpaper Rotation"
+      - "FR-WP-005: Wallpaper Modes (Fixed/Variable)"
+
+    acceptance_criteria:
+      - "Users can select JPEG, PNG, BMP, WEBP wallpapers"
+      - "Live preview before applying"
+      - "Apply to all monitors or specific monitor"
+      - "Time-based scheduling: 30-minute granularity, auto-transition"
+      - "Rotation modes: Sequential, Random, Random Weighted"
+      - "Mode toggle: Fixed ↔ Variable"
+      - "Settings saved to profile"
+      - "Performance: <10% CPU usage"
+      - "All features discoverable in UI without docs"
+
+    technical_approach:
+      wallpaper_engine: "src/services/wallpaperService.ts"
+      windows_api: "SystemParametersInfo (Win32)"
+      scheduling: "node-cron or internal scheduler"
+      image_library: "Sharp (image processing)"
+      ui_component: "src/components/WallpaperPanel.tsx"
+
+    deliverables:
+      - path: "src/services/wallpaperService.ts"
+        description: "Static wallpaper + scheduling + rotation engine"
+      - path: "src/components/WallpaperPanel.tsx"
+        description: "Image picker, mode selector, schedule builder"
+      - path: "src/stores/wallpaperStore.ts"
+        description: "Zustand store for wallpaper state"
+      - path: "tests/wallpaperService.test.ts"
+        description: "Unit tests for wallpaper service"
+
+    estimated_effort:
+      story_points: 34
+      timeline: "Week 2-4"
+      team_size: 1
+      roles: ["@dev (Dex)"]
+
+    waves:
+      - wave: 1
+        name: "Static Wallpaper & Mode System"
+        stories: ["1.1", "1.2"]
+        timeline: "Week 2"
+      - wave: 2
+        name: "Time-Based Scheduling"
+        stories: ["1.3"]
+        timeline: "Week 3"
+      - wave: 3
+        name: "Dynamic Rotation"
+        stories: ["1.4", "1.5"]
+        timeline: "Week 4"
+
+    stories:
+      - id: "1.1"
+        title: "Implement Static Wallpaper Selection & Application"
+        points: 8
+      - id: "1.2"
+        title: "Build Wallpaper Mode Toggle (Fixed/Variable)"
+        points: 5
+      - id: "1.3"
+        title: "Create Time-Based Wallpaper Scheduler"
+        points: 13
+      - id: "1.4"
+        title: "Implement Dynamic Wallpaper Rotation Engine"
+        points: 8
+      - id: "1.5"
+        title: "Add Rotation UI & Presets"
+        points: 5
+
+    dependencies:
+      - "EPIC-0 complete (Electron, React setup)"
+      - "Windows Registry / SystemParametersInfo API knowledge"
+      - "node-cron or scheduler library"
+
+    risks:
+      - risk: "SystemParametersInfo not working in all Windows 11 builds"
+        probability: "Medium"
+        mitigation: "Test on multiple Windows 11 versions; UWP API fallback"
+      - risk: "Scheduler precision (timing drift over hours)"
+        probability: "Low"
+        mitigation: "Use node-cron with NTP-based clock sync checks"
+
+    success_metrics:
+      - "User can apply wallpaper in <5 clicks"
+      - "Schedule changes apply within 1 second"
+      - "Rotation cycles images without visible lag"
+      - ">95% of test cases pass"
+      - "QA gate: PASS with no blocking bugs"
+
+  # ============================================================================
+  # EPIC-2: TASKBAR CUSTOMIZATION HUB (HIGH)
+  # ============================================================================
+  - id: "EPIC-2"
+    name: "Taskbar Customization Hub"
+    priority: "HIGH"
+    status: "Pending"
+    phase: "Phase 1 (MVP)"
+    dependencies: ["EPIC-0"]
+    blocks: ["EPIC-3"]
+    description: |
+      Complete taskbar customization: position, transparency, color, size,
+      visibility of elements, and icon styling.
+
+    features:
+      - "FR-TB-001: Taskbar Position Control"
+      - "FR-TB-002: Taskbar Transparency & Color"
+      - "FR-TB-003: Taskbar Size & Format"
+      - "FR-TB-004: Taskbar Item Visibility"
+      - "FR-TB-005: Taskbar Icon Customization"
+
+    acceptance_criteria:
+      - "Users can change taskbar position (Bottom/Left/Right/Top)"
+      - "Transparency slider: 0% to 100%"
+      - "Color picker for taskbar background"
+      - "Size presets: Small, Default, Large + custom slider"
+      - "Auto-hide toggle"
+      - "Show/hide: Clock, Calendar, Weather, System Tray, Copilot, Search, Task View, Virtual Desktops"
+      - "Icon size slider: 16px to 64px"
+      - "Icon spacing control"
+      - "All changes apply instantly (or with <500ms latency)"
+      - "Settings saved to profile"
+
+    technical_approach:
+      registry_manager: "src/services/registryManager.ts"
+      windows_api: "Registry (HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer)"
+      ui_component: "src/components/TaskbarPanel.tsx"
+      preview: "Live preview toggles"
+
+    deliverables:
+      - path: "src/services/registryManager.ts"
+        description: "Windows Registry read/write for taskbar settings"
+      - path: "src/components/TaskbarPanel.tsx"
+        description: "Position, color, size, visibility controls"
+      - path: "src/stores/taskbarStore.ts"
+        description: "Zustand store for taskbar state"
+      - path: "tests/registryManager.test.ts"
+        description: "Unit tests for registry operations"
+
+    estimated_effort:
+      story_points: 34
+      timeline: "Week 2-4"
+      team_size: 1
+      roles: ["@dev (Dex)", "@architect (Aria)"]
+
+    waves:
+      - wave: 1
+        name: "Basic Position & Color Control"
+        stories: ["2.1", "2.2"]
+        timeline: "Week 2"
+      - wave: 2
+        name: "Size, Format & Visibility"
+        stories: ["2.3", "2.4"]
+        timeline: "Week 3"
+      - wave: 3
+        name: "Icon Customization & Polish"
+        stories: ["2.5"]
+        timeline: "Week 4"
+
+    stories:
+      - id: "2.1"
+        title: "Implement Taskbar Position Control (Bottom/Left/Right/Top)"
+        points: 8
+      - id: "2.2"
+        title: "Add Taskbar Transparency & Color Picker"
+        points: 8
+      - id: "2.3"
+        title: "Build Taskbar Size & Format Controls"
+        points: 8
+      - id: "2.4"
+        title: "Create Taskbar Item Visibility Manager"
+        points: 8
+      - id: "2.5"
+        title: "Implement Icon Size & Spacing Customization"
+        points: 5
+
+    dependencies:
+      - "EPIC-0 complete"
+      - "Windows Registry API knowledge"
+      - "UAC elevation handling (may need admin prompt)"
+
+    risks:
+      - risk: "Registry changes require UAC elevation; some users lack admin rights"
+        probability: "Medium"
+        mitigation: "Graceful fallback: show 'Admin required' and skip Registry ops"
+      - risk: "Windows 11 changes may affect Registry paths between builds"
+        probability: "Low"
+        mitigation: "Version detection; registry path validation before write"
+
+    success_metrics:
+      - "All 5 taskbar controls discoverable in 1 panel"
+      - "Settings apply in <500ms"
+      - "Live preview works smoothly"
+      - ">95% of test cases pass"
+      - "QA gate: PASS"
+
+  # ============================================================================
+  # EPIC-3: PROFILE SYSTEM & PERSISTENCE (HIGH)
+  # ============================================================================
+  - id: "EPIC-3"
+    name: "Profile System & Persistence"
+    priority: "HIGH"
+    status: "Pending"
+    phase: "Phase 1 (MVP)"
+    dependencies: ["EPIC-0", "EPIC-1", "EPIC-2"]
+    description: |
+      Save, load, and apply configuration profiles. Bundled settings from
+      Wallpaper, Taskbar, Theme, and Shortcuts.
+
+    features:
+      - "FR-PR-001: Profile Creation & Management"
+      - "FR-PR-002: Profile Application"
+      - "FR-PR-003: Profile Persistence"
+      - "FR-PR-004: Default Profile"
+
+    acceptance_criteria:
+      - "Users can create named profiles (e.g., 'Work', 'Gaming', 'Night Mode')"
+      - "Selectively include settings in profile (checkboxes)"
+      - "Single-click profile application"
+      - "Profiles stored in %APPDATA%/PersonalizacionSO/profiles/ (JSON)"
+      - "Profile list in main UI with apply buttons"
+      - "Keyboard shortcuts for top 10 profiles (Ctrl+Shift+1, etc.)"
+      - "Set default profile to auto-apply on startup"
+      - "Skip default profile by holding Shift during launch"
+      - "Import/export profiles as .profile files"
+      - "Automatic backup before updates"
+
+    technical_approach:
+      profile_manager: "src/services/profileManager.ts"
+      storage: "JSON files in %APPDATA%"
+      ui_component: "src/components/ProfileManager.tsx"
+      keyboard_handler: "src/services/keyboardShortcutService.ts"
+
+    deliverables:
+      - path: "src/services/profileManager.ts"
+        description: "Profile CRUD, serialization, apply logic"
+      - path: "src/components/ProfileManager.tsx"
+        description: "Create, edit, delete, apply, set default UI"
+      - path: "src/stores/profileStore.ts"
+        description: "Zustand store for profile state"
+      - path: "tests/profileManager.test.ts"
+        description: "Unit tests for profile operations"
+
+    estimated_effort:
+      story_points: 21
+      timeline: "Week 4-5"
+      team_size: 1
+      roles: ["@dev (Dex)"]
+
+    waves:
+      - wave: 1
+        name: "Profile CRUD & Persistence"
+        stories: ["3.1", "3.2"]
+        timeline: "Week 4"
+      - wave: 2
+        name: "Application & Keyboard Shortcuts"
+        stories: ["3.3", "3.4"]
+        timeline: "Week 5"
+
+    stories:
+      - id: "3.1"
+        title: "Implement Profile Creation & Storage (JSON)"
+        points: 8
+      - id: "3.2"
+        title: "Build Profile Manager UI (Create, Edit, Delete)"
+        points: 5
+      - id: "3.3"
+        title: "Create Profile Application Engine & Keyboard Shortcuts"
+        points: 8
+      - id: "3.4"
+        title: "Add Default Profile & Startup Auto-Apply"
+        points: 5
+
+    dependencies:
+      - "EPIC-1 complete (Wallpaper state serializable)"
+      - "EPIC-2 complete (Taskbar state serializable)"
+      - "EPIC-4, EPIC-5 must be designed for profile inclusion"
+
+    risks:
+      - risk: "Profile corruption if app crashes during write"
+        probability: "Low"
+        mitigation: "Atomic file operations; backup before overwrite"
+      - risk: "Complex dependency resolution when applying partial profiles"
+        probability: "Medium"
+        mitigation: "Design: profiles are atomic (all-or-nothing) or skip missing deps"
+
+    success_metrics:
+      - "Profile creation takes <2 seconds"
+      - "Profile application completes in <1 second"
+      - "Users can manage 50+ profiles without UI lag"
+      - ">95% of test cases pass"
+      - "QA gate: PASS"
+
+  # ============================================================================
+  # EPIC-4: THEME & APPEARANCE CONTROL (MEDIUM)
+  # ============================================================================
+  - id: "EPIC-4"
+    name: "Theme & Appearance Control"
+    priority: "MEDIUM"
+    status: "Pending"
+    phase: "Phase 1 (MVP)"
+    dependencies: ["EPIC-0"]
+    blocks: ["EPIC-3"]
+    description: |
+      Light/Dark theme toggle, accent color selection, and theme synchronization
+      across Windows and application UI.
+
+    features:
+      - "FR-TH-001: Theme Mode Selection (Light/Dark)"
+      - "FR-TH-002: Accent Color Selection"
+      - "FR-TH-003: Font Customization (Deferred to v1.1)"
+
+    acceptance_criteria:
+      - "Users can toggle Light ↔ Dark theme"
+      - "Color picker: Visual + hex input"
+      - "Preset color palette (Windows 11 defaults + suggestions)"
+      - "Preview accent color in action"
+      - "Apply accent color to: Windows, Start Menu, Taskbar"
+      - "Sync theme with taskbar/accent colors (optional)"
+      - "Settings saved to profile"
+      - "Font customization deferred to v1.1"
+
+    technical_approach:
+      registry_manager: "Reuse from EPIC-2"
+      color_picker: "Custom React component or library (react-color)"
+      ui_component: "src/components/ThemePanel.tsx"
+
+    deliverables:
+      - path: "src/components/ThemePanel.tsx"
+        description: "Light/Dark toggle, color picker, preview"
+      - path: "src/stores/themeStore.ts"
+        description: "Zustand store for theme state"
+      - path: "src/styles/theme.ts"
+        description: "Tailwind theme configuration"
+
+    estimated_effort:
+      story_points: 13
+      timeline: "Week 3-4"
+      team_size: 1
+      roles: ["@dev (Dex)", "@ux-design-expert (Uma)"]
+
+    waves:
+      - wave: 1
+        name: "Light/Dark Theme Toggle"
+        stories: ["4.1"]
+        timeline: "Week 3"
+      - wave: 2
+        name: "Accent Color Customization"
+        stories: ["4.2"]
+        timeline: "Week 4"
+
+    stories:
+      - id: "4.1"
+        title: "Implement Light/Dark Theme Toggle"
+        points: 5
+      - id: "4.2"
+        title: "Build Accent Color Picker & Preview"
+        points: 8
+
+    dependencies:
+      - "EPIC-0 complete"
+      - "Windows Registry API (for theme persistence)"
+
+    risks:
+      - risk: "Theme application may require app restart"
+        probability: "Low"
+        mitigation: "Use Electron's window reload or live theme refresh"
+
+    success_metrics:
+      - "Theme change applies instantly"
+      - "Color picker is intuitive for non-designers"
+      - ">95% of test cases pass"
+      - "QA gate: PASS"
+
+  # ============================================================================
+  # EPIC-5: KEYBOARD SHORTCUTS HUB (MEDIUM)
+  # ============================================================================
+  - id: "EPIC-5"
+    name: "Keyboard Shortcuts Hub"
+    priority: "MEDIUM"
+    status: "Pending"
+    phase: "Phase 1 (MVP)"
+    dependencies: ["EPIC-0"]
+    blocks: ["EPIC-3"]
+    description: |
+      Inventory of Windows 11 keyboard shortcuts with search, categorization,
+      favorites, and documentation. Custom shortcuts deferred to v1.1.
+
+    features:
+      - "FR-KB-001: Keyboard Shortcuts Inventory"
+      - "FR-KB-002: Keyboard Shortcut Search"
+      - "FR-KB-003: Favorites/Pinning"
+      - "FR-KB-004: Custom Shortcut Creation (Deferred to v1.1)"
+
+    acceptance_criteria:
+      - "Complete catalog of 100+ Windows 11 shortcuts preloaded"
+      - "Shortcuts categorized by type (Windows Key, Alt+Key, Ctrl+Key, etc.)"
+      - "Real-time search by function or key combination"
+      - "Pin/unpin favorites with star icon"
+      - "Pinned shortcuts appear at top of list"
+      - "Custom descriptions/notes editable"
+      - "Favorites persist in profile"
+      - "Custom shortcut creation deferred to v1.1"
+
+    technical_approach:
+      data_storage: "JSON shortcuts database in assets"
+      search_engine: "Fuse.js (fuzzy search library)"
+      ui_component: "src/components/ShortcutsPanel.tsx"
+
+    deliverables:
+      - path: "src/data/shortcuts.json"
+        description: "100+ Windows 11 shortcuts catalog"
+      - path: "src/components/ShortcutsPanel.tsx"
+        description: "Inventory list, search, favorites"
+      - path: "src/stores/shortcutsStore.ts"
+        description: "Zustand store for shortcuts state"
+      - path: "tests/shortcutsSearch.test.ts"
+        description: "Search functionality tests"
+
+    estimated_effort:
+      story_points: 13
+      timeline: "Week 3-4"
+      team_size: 1
+      roles: ["@dev (Dex)"]
+
+    waves:
+      - wave: 1
+        name: "Shortcuts Inventory & Search"
+        stories: ["5.1", "5.2"]
+        timeline: "Week 3"
+      - wave: 2
+        name: "Favorites & Organization"
+        stories: ["5.3"]
+        timeline: "Week 4"
+
+    stories:
+      - id: "5.1"
+        title: "Create Windows 11 Shortcuts Database (100+ entries)"
+        points: 5
+      - id: "5.2"
+        title: "Implement Shortcuts Search & Filtering"
+        points: 5
+      - id: "5.3"
+        title: "Build Favorites/Pinning System"
+        points: 3
+
+    dependencies:
+      - "EPIC-0 complete"
+      - "Fuse.js library for search"
+
+    risks:
+      - risk: "Windows 11 build differences may affect shortcut validity"
+        probability: "Low"
+        mitigation: "Include version notes in shortcuts database"
+
+    success_metrics:
+      - "Search returns results in <100ms"
+      - "All 100+ shortcuts display without lag"
+      - "Favorites persist across sessions"
+      - ">95% of test cases pass"
+      - "QA gate: PASS"
+
+# ============================================================================
+# EXECUTION TIMELINE
+# ============================================================================
+execution_timeline:
+  phase_0:
+    name: "Setup & Foundation"
+    duration: "Weeks 1-2"
+    epics: ["EPIC-0"]
+    milestone: "Development environment ready"
+
+  phase_1:
+    name: "MVP Feature Development (Parallel Waves)"
+    duration: "Weeks 2-5"
+    epics: ["EPIC-1", "EPIC-2", "EPIC-4", "EPIC-5"]
+    notes: "Wallpaper, Taskbar, Theme, Shortcuts can progress in parallel"
+    milestone: "All features MVP-complete"
+
+  phase_2:
+    name: "Profile Integration & Testing"
+    duration: "Week 5-6"
+    epics: ["EPIC-3"]
+    notes: "Profile system integrates all features from Phase 1"
+    milestone: "Profile system verified with all features"
+
+  phase_3:
+    name: "QA, Polish & Release"
+    duration: "Weeks 6-8"
+    gates:
+      - "CodeRabbit review all code"
+      - "@qa QA gate: all tests PASS"
+      - "User acceptance testing"
+      - "Signed .exe ready"
+    milestone: "v1.0 released"
+
+# ============================================================================
+# RESOURCE ALLOCATION
+# ============================================================================
+resources:
+  team:
+    - role: "@dev (Dex)"
+      capacity: "100%"
+      epics: ["EPIC-0", "EPIC-1", "EPIC-2", "EPIC-3", "EPIC-4", "EPIC-5"]
+      timeline: "Weeks 1-8"
+
+    - role: "@architect (Aria)"
+      capacity: "30%"
+      epics: ["EPIC-0", "EPIC-2"]
+      timeline: "Weeks 1-4"
+
+    - role: "@qa (Quinn)"
+      capacity: "20%"
+      epics: ["All"]
+      timeline: "Weeks 4-8"
+
+    - role: "@ux-design-expert (Uma)"
+      capacity: "25%"
+      epics: ["EPIC-4", "EPIC-5"]
+      timeline: "Weeks 1-3"
+
+  tools:
+    - "Electron 28+"
+    - "React 18"
+    - "TypeScript"
+    - "Zustand"
+    - "Tailwind CSS"
+    - "Vite"
+    - "node-ffi, windows-registry, node-cron"
+    - "Jest + Vitest (testing)"
+    - "GitHub Actions (CI/CD)"
+
+# ============================================================================
+# SUCCESS CRITERIA & GATES
+# ============================================================================
+success_gates:
+  gate_1_foundation:
+    name: "EPIC-0 Completion Gate"
+    criteria:
+      - "Electron + React builds successfully"
+      - "All services stubbed and type-safe"
+      - "CI/CD pipeline operational"
+      - "Zero blocking issues"
+    approval_by: "@architect, @dev"
+
+  gate_2_features:
+    name: "Feature Completion Gate (EPIC-1-5)"
+    criteria:
+      - "All acceptance criteria met"
+      - "CodeRabbit review: APPROVE"
+      - ">95% test coverage"
+      - "@qa QA gate: PASS"
+    approval_by: "@qa, @dev, @architect"
+
+  gate_3_integration:
+    name: "Profile Integration Gate (EPIC-3)"
+    criteria:
+      - "All features serializable to profile"
+      - "Profile apply/load atomic and reliable"
+      - "End-to-end scenarios verified"
+      - "@qa QA gate: PASS with no blockers"
+    approval_by: "@qa"
+
+  gate_4_release:
+    name: "Release Readiness Gate"
+    criteria:
+      - "All QA gates PASS"
+      - "User acceptance testing >80% satisfaction"
+      - "Signed .exe ready"
+      - "Release notes + User Guide complete"
+      - "No P0/P1 bugs"
+    approval_by: "@pm, @qa, @dev"
+
+# ============================================================================
+# ROLLOUT STRATEGY
+# ============================================================================
+rollout:
+  phase: "MVP-only (v1.0)"
+  target_users: "Early adopters, Windows 11 Pro users"
+  distribution: "Direct .exe download (no installer)"
+  rollback_plan: "Keep v0.9 binary available for 30 days"
+  feedback_channel: "GitHub Issues"
+
+# ============================================================================
+# POST-MVP ROADMAP (v1.1, v2.0)
+# ============================================================================
+future_roadmap:
+  v1_1:
+    name: "v1.1 — Advanced Features & Polish"
+    target: "Q4 2026"
+    features:
+      - "FR-WP-002: Animated Wallpapers (GIF, MP4, WebM)"
+      - "FR-KB-004: Custom Keyboard Shortcut Creation"
+      - "Performance optimization"
+      - "UI/UX refinements"
+
+  v2_0:
+    name: "v2.0 — Cloud & Ecosystem"
+    target: "Q1 2027"
+    features:
+      - "Cloud Profile Sync (OneDrive)"
+      - "Multi-monitor support"
+      - "Cursor customization"
+      - "Sound & Notification customization"
+      - "Community theme sharing"
+
+# ============================================================================
+# METADATA
+# ============================================================================
+metadata:
+  framework: "Synkra AIOX"
+  created_by: "Morgan (Product Manager)"
+  created_date: "2026-04-27"
+  last_updated: "2026-04-27"
+  status: "Ready for Execution"
+  format_version: "1.0"

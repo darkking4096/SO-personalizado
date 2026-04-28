@@ -1,0 +1,152 @@
+/**
+ * Registry Manager Service
+ * Handles all Windows Registry operations for system customization
+ *
+ * Manages:
+ * - Theme settings (Light/Dark)
+ * - Wallpaper configuration
+ * - Taskbar properties
+ * - Accent colors
+ * - Other Windows 11 personalization settings
+ */
+
+export interface RegistryEntry {
+  hive: string
+  path: string
+  key: string
+  value?: string | number | boolean
+  type?: 'string' | 'dword' | 'binary'
+}
+
+export class RegistryManager {
+  // Common Registry hive constants (used in implementations)
+  // HKCU: 'HKEY_CURRENT_USER'
+  // HKLM: 'HKEY_LOCAL_MACHINE'
+
+  // Common Registry paths (used in implementations)
+  // TODO: These will be used when implementing Registry read/write operations
+  // PERSONALIZE: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+  // THEMES: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+  // WALLPAPER: HKCU\Control Panel\Desktop
+  // ACCENT_COLOR: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent
+
+  /**
+   * Read a Registry value
+   * @param hive Registry hive (HKCU, HKLM)
+   * @param path Registry path
+   * @param key Registry key name
+   * @returns Value or null if not found
+   */
+  static async read(hive: string, path: string, key: string): Promise<unknown> {
+    // TODO: Implement using node-ffi or windows-registry
+    console.log(`[RegistryManager] Reading ${hive}\\${path}\\${key}`)
+    return null
+  }
+
+  /**
+   * Write a Registry value
+   * @param hive Registry hive
+   * @param path Registry path
+   * @param key Registry key name
+   * @param value Value to write
+   * @param type Value type (string, dword, binary)
+   * @returns Success status
+   */
+  static async write(
+    hive: string,
+    path: string,
+    key: string,
+    value: unknown,
+    type = 'string'
+  ): Promise<boolean> {
+    // TODO: Implement using node-ffi or windows-registry
+    console.log(`[RegistryManager] Writing ${hive}\\${path}\\${key} = ${value} (${type})`)
+    return false
+  }
+
+  /**
+   * Get theme setting (light/dark)
+   * @returns 'light' | 'dark'
+   */
+  static async getTheme(): Promise<'light' | 'dark'> {
+    // TODO: Implement reading from Themes\\Personalize\\AppsUseLightTheme
+    console.log('[RegistryManager] Getting theme setting')
+    return 'light'
+  }
+
+  /**
+   * Set theme setting
+   * @param theme 'light' or 'dark'
+   * @returns Success status
+   */
+  static async setTheme(theme: 'light' | 'dark'): Promise<boolean> {
+    // TODO: Implement writing to Themes\\Personalize
+    console.log(`[RegistryManager] Setting theme to ${theme}`)
+    return false
+  }
+
+  /**
+   * Get accent color value
+   * @returns Hex color string
+   */
+  static async getAccentColor(): Promise<string> {
+    // TODO: Implement reading from Accent\\AccentColorSet
+    console.log('[RegistryManager] Getting accent color')
+    return '#0078D4'
+  }
+
+  /**
+   * Set accent color
+   * @param color Hex color string or Windows preset
+   * @returns Success status
+   */
+  static async setAccentColor(color: string): Promise<boolean> {
+    // TODO: Implement writing accent color
+    console.log(`[RegistryManager] Setting accent color to ${color}`)
+    return false
+  }
+
+  /**
+   * Get taskbar property
+   * @param property Property name (position, transparency, size, etc.)
+   * @returns Property value
+   */
+  static async getTaskbarProperty(property: string): Promise<unknown> {
+    // TODO: Implement reading taskbar properties from Personalize path
+    console.log(`[RegistryManager] Getting taskbar property: ${property}`)
+    return null
+  }
+
+  /**
+   * Set taskbar property
+   * @param property Property name
+   * @param value New value
+   * @returns Success status
+   */
+  static async setTaskbarProperty(property: string, value: unknown): Promise<boolean> {
+    // TODO: Implement writing taskbar properties
+    console.log(`[RegistryManager] Setting taskbar ${property} = ${value}`)
+    return false
+  }
+
+  /**
+   * Create Registry backup (for rollback)
+   * @returns Backup identifier
+   */
+  static async createBackup(): Promise<string> {
+    // TODO: Implement Registry backup for atomic operations
+    console.log('[RegistryManager] Creating Registry backup')
+    return `backup-${Date.now()}`
+  }
+
+  /**
+   * Restore from Registry backup
+   * @param backupId Backup identifier
+   * @returns Success status
+   */
+  static async restoreBackup(backupId: string): Promise<boolean> {
+    // TODO: Implement Registry restoration
+    console.log(`[RegistryManager] Restoring from backup: ${backupId}`)
+    return false
+  }
+}
