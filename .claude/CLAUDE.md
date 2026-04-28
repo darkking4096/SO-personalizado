@@ -2,6 +2,17 @@
 
 You are working with Synkra AIOX, an AI-Orchestrated System for Full Stack Development.
 
+---
+
+## ⚡ REPOSITÓRIO GITHUB (IMPORTANTE — NUNCA ESQUECER)
+
+**Nome do Repositório:** `SO-personalizado`  
+**URL:** https://github.com/darkking4096/SO-personalizado  
+**Proprietário:** darkking4096  
+**Usado para:** Todos os operações de push, PR, release e CI/CD
+
+---
+
 <!-- AIOX-MANAGED-START: core-framework -->
 ## Core Framework Understanding
 
@@ -129,6 +140,73 @@ After ANY validation, review, or gate decision, the **story file status field MU
 - This is a process lock — not a suggestion, a requirement
 
 **Enforcement:** This rule is in CLAUDE.md (permanent). All agents verify on activation.
+
+### ⚠️ MANDATORY: QA Gate File Documentation (Every Review/Gate)
+
+**CRITICAL RULE - ABSOLUTE REQUIREMENT:**
+
+**Whenever @qa executes `*gate` or `*review` on ANY story, you MUST ALWAYS create a formal gate file in `docs/qa/gates/`.** This is NON-NEGOTIABLE. No exceptions.
+
+**Gate File Requirements:**
+
+1. **Naming Convention:**
+   ```
+   {storyId}-{kebab-case-story-title}.yml
+   ```
+   Examples:
+   - `1.1-static-wallpaper-selection-application.yml`
+   - `0.0-application-foundation-infrastructure-setup.yml`
+
+2. **File Location:** Always `docs/qa/gates/` — this is the official repository for all QA gate decisions
+
+3. **Gate File YAML Header (REQUIRED):**
+   ```yaml
+   schema: 1
+   story: '{storyId}'
+   gate: PASS | FAIL | CONCERNS | WAIVED
+   status_reason: '{one-line summary of verdict}'
+   reviewer: 'Quinn'
+   updated: '{ISO 8601 timestamp}'
+   top_issues: [{severity, category, description, recommendation}]
+   waiver: { active: false }
+   ```
+
+4. **Gate File Sections (REQUIRED):**
+   - **Validation Summary** with Quality Gate Results
+   - **Quality Checks Breakdown** — All 7 checks must be present:
+     1. Code Review (Code quality, patterns, maintainability)
+     2. Unit Tests (Coverage, pass rate, edge cases)
+     3. Acceptance Criteria (All AC verified)
+     4. No Regressions (Impact on existing code)
+     5. Performance (Targets met)
+     6. Security (No vulnerabilities)
+     7. Documentation (Updated, clear)
+   - **File List Validation** (Deliverables present)
+   - **Known Deferrals Table** (Non-blocking, target stories)
+   - **Next Steps** (Who does what next)
+   - **Gate Files & References** (Links to story, tests, branch)
+
+5. **Story File Status Update (MANDATORY AFTER GATE):**
+   - PASS verdict → Status `InReview` (not Done — Done is after @devops pushes)
+   - FAIL verdict → Status `InProgress` (return to @dev)
+   - CONCERNS verdict → Status `Done` (approved with notes)
+   - WAIVED verdict → Status `Done` (approved with waiver)
+   - Change Log entry with timestamp, verdict, reviewer
+
+6. **NO EXCEPTIONS:**
+   - Gate files ARE the official QA record
+   - Story file QA sections are summaries only — NOT the source of truth
+   - Missing gate file = incomplete QA process
+   - If a story was pushed without a gate file, that is a PROCESS VIOLATION
+
+**Why This Rule Exists:**
+- Audit trail for code quality decisions (referenceable in reviews, incidents, retrospectives)
+- Proof to stakeholders that code was properly reviewed before merge
+- Traceable quality metrics across releases
+- Prevents rework and confusion about what was verified
+- Gate files + story status must always match
+
+**Enforcement:** This rule is in CLAUDE.md (permanent, NON-NEGOTIABLE). Checked on every @qa activation.
 
 ### Code Standards
 - Write clean, self-documenting code

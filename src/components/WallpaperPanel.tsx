@@ -1,0 +1,143 @@
+import React, { useState, useCallback } from 'react'
+import { useWallpaperStore } from '../stores/wallpaperStore'
+import { WallpaperService } from '../services/wallpaperService'
+import { MonitorSelector } from './MonitorSelector'
+
+export const WallpaperPanel: React.FC = () => {
+  const [fileName, setFileName] = useState<string>('')
+  const [previewLoading, setPreviewLoading] = useState(false)
+
+  const {
+    currentWallpaper,
+    previewImage,
+    selectedMonitor,
+    isApplying,
+    error,
+    setCurrentWallpaper,
+    setPreviewImage,
+    setIsApplying,
+    setError,
+  } = useWallpaperStore()
+
+  /**
+   * Handle file selection via file browser
+   * In a real app, this would use Electron's dialog.showOpenDialog()
+   */
+  const handleBrowseClick = useCallback(async () => {
+    try {
+      // This would call ipcRenderer.invoke('open-file-dialog', { filters: imageFilters })
+      // For now, prompt user for file path
+      const filePath = prompt('Enter wallpaper file path:')
+
+      if (!filePath) return
+
+      setError(null)
+      setPreviewLoading(true)
+
+      // Validate and load preview
+      const result = await WallpaperService.selectWallpaper(filePath)
+
+      if (result.success) {
+        setFileName(filePath.split('\\').pop() || filePath)
+        setCurrentWallpaper(filePath)
+        setPreviewImage(result.preview || null)
+      } else {
+        setError(result.error || 'Failed to select wallpaper')
+      }
+    } catch (err) {
+      setError('Failed to select wallpaper')
+    } finally {
+      setPreviewLoading(false)
+    }
+  }, [setCurrentWallpaper, setPreviewImage, setError])
+
+  /**
+   * Handle wallpaper application
+   */
+  const handleApplyClick = useCallback(async () => {
+    if (!currentWallpaper?.path) {
+      setError('Please select a wallpaper first')
+      return
+    }
+
+    try {
+      setError(null)
+      setIsApplying(true)
+
+      const result = await WallpaperService.applyWallpaper(currentWallpaper.path, selectedMonitor)
+
+      if (!result.success) {
+        setError(result.error || 'Failed to apply wallpaper')
+      }
+    } catch (err) {
+      setError('Failed to apply wallpaper')
+    } finally {
+      setIsApplying(false)
+    }
+  }, [currentWallpaper, selectedMonitor, setIsApplying, setError])
+
+  return (
+    <div className="w-full max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Wallpaper Settings</h2>
+
+      {/* File Browser Section */}
+      <div className="mb-6">
+        <button
+          onClick={handleBrowseClick}
+          disabled={previewLoading}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
+        >
+          {previewLoading ? 'Loading...' : 'Browse Wallpapers'}
+        </button>
+
+        {fileName && (
+          <div className="mt-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-md">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              <strong>Selected:</strong> {fileName}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Preview Section */}
+      {previewImage && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Preview</h3>
+          <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-700">
+            <img
+              src={previewImage}
+              alt="Wallpaper preview"
+              className="w-full h-48 object-contain"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Monitor Selector */}
+      <div className="mb-6">
+        <MonitorSelector />
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-md text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Apply Button */}
+      <button
+        onClick={handleApplyClick}
+        disabled={!currentWallpaper || isApplying}
+        className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed font-medium"
+      >
+        {isApplying ? 'Applying...' : 'Apply Wallpaper'}
+      </button>
+
+      {/* Performance Note */}
+      <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+        ℹ️ Image loading: &lt;500ms | Apply time: &lt;1s
+      </p>
+    </div>
+  )
+}
