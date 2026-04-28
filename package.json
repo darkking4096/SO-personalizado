@@ -8,9 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "electron-vite dev",
-    "build": "electron-vite build",
-    "build:exe": "electron-builder --win --publish never",
+    "dev": "vite",
+    "build": "vite build",
+    "build:exe": "vite build && electron-builder --win --publish never",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
