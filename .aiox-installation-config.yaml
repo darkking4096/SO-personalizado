@@ -1,0 +1,16 @@
+schema: 1
+repository:
+  name: SO-personalizado
+  url: https://github.com/darkking4096/SO-personalizado
+  owner: darkking4096
+  remote: origin
+  default_branch: main
+  installation_mode: project-development
+
+devops_context:
+  auto_detected: false
+  configured_at: '2026-04-28T00:00:00Z'
+  confirmed_by_user: true
+
+# Used by @devops agent on activation
+# DO NOT DELETE - this is the source of truth for repository operations
