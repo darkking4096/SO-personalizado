@@ -1,19 +1,26 @@
 {
-  "generated_at": "2026-04-28T11:01:00",
+  "generated_at": "2026-04-28T17:35:00.000Z",
   "project_name": "personalizacao-so",
+  "project_type": "Electron Desktop Application",
+  
   "system": {
     "os": "Windows 11 Pro",
+    "build": "26200",
     "architecture": "x64",
-    "user": "HomePC"
+    "shell": "MSYS2/Git Bash"
   },
+  
   "cli_tools": {
     "git": {
       "installed": true,
-      "version": "2.51.0"
+      "version": "2.51.0",
+      "path": "C:\Program Files\Git\bin\git.exe"
     },
     "gh": {
       "installed": true,
-      "version": "pending-auth"
+      "version": "2.92.0",
+      "authenticated": false,
+      "note": "Requires shell restart and 'gh auth login'"
     },
     "node": {
       "installed": true,
@@ -21,17 +28,64 @@
     },
     "npm": {
       "installed": true,
-      "version": "10.8.1"
+      "version": "10.5.0"
+    },
+    "pnpm": {
+      "installed": true,
+      "version": "10.16.0"
+    },
+    "railway": {
+      "installed": true,
+      "version": "4.43.0"
+    },
+    "docker": {
+      "installed": true,
+      "version": "28.3.2",
+      "running": true
+    },
+    "bun": {
+      "installed": true,
+      "version": "latest"
+    },
+    "supabase": {
+      "installed": false,
+      "note": "Requires manual installation from https://github.com/supabase/cli#install-the-cli"
+    },
+    "coderabbit": {
+      "wsl_available": true,
+      "installation_status": "not_installed",
+      "note": "Install in WSL: curl -fsSL https://coderabbit.ai/install.sh | bash"
     }
   },
+  
   "repository": {
     "initialized": true,
-    "remote_url": null,
-    "branch": "main"
+    "remote_url": "https://github.com/darkking4096/SO-personalizado",
+    "branch": "master",
+    "uncommitted_changes": true,
+    "untracked_files": true
   },
+  
+  "project_structure": {
+    "docs": true,
+    "src": true,
+    "tests": true,
+    ".aiox": true,
+    "package.json": true,
+    ".aiox/config.yaml": true
+  },
+  
   "validation": {
     "essential_complete": true,
-    "github_cli_authenticated": false,
-    "ready_for_development": true
-  }
+    "infrastructure_complete": true,
+    "ready_for_development": true,
+    "blockers": []
+  },
+  
+  "next_actions": [
+    "1. Restart your bash/terminal session for GitHub CLI to work",
+    "2. Run: gh auth login (to authenticate with GitHub)",
+    "3. Review uncommitted changes: git status",
+    "4. Continue with story development workflow"
+  ]
 }

@@ -6,6 +6,15 @@
 // Wallpaper types
 export type WallpaperMode = 'fixed' | 'variable'
 
+export type RotationMode = 'sequential' | 'random' | 'weighted'
+
+export interface RotationConfig {
+  mode: RotationMode
+  intervalMinutes: number
+  imagePool: string[]
+  weights?: Record<string, number>
+}
+
 export interface WallpaperState {
   currentPath: string
   mode: WallpaperMode
@@ -15,6 +24,12 @@ export interface WallpaperState {
       time: string
       wallpaperPath: string
     }>
+  }
+  rotation?: {
+    enabled: boolean
+    config: RotationConfig
+    currentIndex: number
+    isRotating: boolean
   }
 }
 

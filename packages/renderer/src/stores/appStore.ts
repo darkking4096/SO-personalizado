@@ -9,6 +9,8 @@ import type { AppState, Profile, WallpaperState, ThemeState, TaskbarState } from
 interface AppStoreActions {
   // Wallpaper actions
   setWallpaper: (state: Partial<WallpaperState>) => void
+  startRotation: (config: import('@shared/types/index.js').RotationConfig) => void
+  stopRotation: () => void
 
   // Theme actions
   setTheme: (state: Partial<ThemeState>) => void
@@ -35,6 +37,16 @@ const initialState: AppState = {
   wallpaper: {
     currentPath: '',
     mode: 'fixed',
+    rotation: {
+      enabled: false,
+      config: {
+        mode: 'sequential',
+        intervalMinutes: 30,
+        imagePool: [],
+      },
+      currentIndex: 0,
+      isRotating: false,
+    },
   },
   theme: {
     mode: 'light',
@@ -57,6 +69,36 @@ export const useAppStore = create<AppState & AppStoreActions>((set) => ({
   setWallpaper: (wallpaper) =>
     set((state) => ({
       wallpaper: { ...state.wallpaper, ...wallpaper },
+    })),
+
+  startRotation: (config) =>
+    set((state) => ({
+      wallpaper: {
+        ...state.wallpaper,
+        rotation: {
+          enabled: true,
+          config,
+          currentIndex: 0,
+          isRotating: true,
+        },
+      },
+    })),
+
+  stopRotation: () =>
+    set((state) => ({
+      wallpaper: {
+        ...state.wallpaper,
+        rotation: {
+          enabled: false,
+          config: state.wallpaper.rotation?.config || {
+            mode: 'sequential',
+            intervalMinutes: 30,
+            imagePool: [],
+          },
+          currentIndex: 0,
+          isRotating: false,
+        },
+      },
     })),
 
   // Theme
