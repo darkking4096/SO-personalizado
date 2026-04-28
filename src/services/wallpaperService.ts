@@ -6,11 +6,14 @@
  * - Set static wallpapers (JPEG, PNG, BMP, WEBP)
  * - Time-based scheduling (e.g., sunrise/sunset wallpaper change)
  * - Profile-based rotation (save and apply wallpaper groups)
+ * - Wallpaper mode toggle (fixed/variable)
  *
  * Features (v1.1 - deferred):
  * - Animated wallpapers (GIF, MP4, WebM)
  * - Dynamic wallpaper rotation
  */
+
+import { WallpaperMode } from '../types'
 
 export interface WallpaperConfig {
   path: string
@@ -158,5 +161,39 @@ export class WallpaperService {
     const supportedFormats = ['.jpeg', '.jpg', '.png', '.bmp', '.webp']
     const ext = path.substring(path.lastIndexOf('.')).toLowerCase()
     return supportedFormats.includes(ext)
+  }
+
+  /**
+   * Get current wallpaper mode (fixed or variable)
+   * @returns Current mode
+   */
+  static getCurrentMode(): WallpaperMode {
+    // In actual implementation, this would read from persistent store
+    // For now, return 'fixed' as default
+    return 'fixed'
+  }
+
+  /**
+   * Validate mode transition
+   * @param from Current mode
+   * @param to Target mode
+   * @returns Validation result
+   */
+  static validateModeTransition(
+    from: WallpaperMode,
+    to: WallpaperMode
+  ): { valid: boolean; message?: string } {
+    // All transitions are valid: fixed → variable and variable → fixed
+    if (from === to) {
+      return { valid: false, message: 'New mode is the same as current mode' }
+    }
+
+    // Validate modes are correct
+    const validModes: WallpaperMode[] = ['fixed', 'variable']
+    if (!validModes.includes(from) || !validModes.includes(to)) {
+      return { valid: false, message: 'Invalid mode' }
+    }
+
+    return { valid: true }
   }
 }

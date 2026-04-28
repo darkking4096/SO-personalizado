@@ -4,8 +4,11 @@
  */
 
 // Wallpaper types
+export type WallpaperMode = 'fixed' | 'variable'
+
 export interface WallpaperState {
   currentPath: string
+  mode: WallpaperMode
   schedule?: {
     enabled: boolean
     times: Array<{

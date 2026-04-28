@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { WallpaperMode } from '../types'
 
 export interface Monitor {
   id: string
@@ -13,6 +14,7 @@ interface WallpaperStoreState {
   previewImage: string | null
   availableMonitors: Monitor[]
   selectedMonitor: string // 'all' or monitorId
+  mode: WallpaperMode // 'fixed' or 'variable'
   isApplying: boolean
   error: string | null
 
@@ -21,6 +23,7 @@ interface WallpaperStoreState {
   setPreviewImage: (imageData: string | null) => void
   setAvailableMonitors: (monitors: Monitor[]) => void
   setSelectedMonitor: (monitorId: string) => void
+  setMode: (mode: WallpaperMode) => void
   setIsApplying: (applying: boolean) => void
   setError: (error: string | null) => void
   reset: () => void
@@ -31,6 +34,7 @@ const initialState = {
   previewImage: null,
   availableMonitors: [],
   selectedMonitor: 'all',
+  mode: 'fixed' as WallpaperMode,
   isApplying: false,
   error: null,
 }
@@ -46,6 +50,8 @@ export const useWallpaperStore = create<WallpaperStoreState>((set) => ({
   setAvailableMonitors: (monitors) => set({ availableMonitors: monitors }),
 
   setSelectedMonitor: (monitorId) => set({ selectedMonitor: monitorId }),
+
+  setMode: (mode) => set({ mode }),
 
   setIsApplying: (applying) => set({ isApplying: applying }),
 

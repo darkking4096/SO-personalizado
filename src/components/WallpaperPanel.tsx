@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useWallpaperStore } from '../stores/wallpaperStore'
 import { WallpaperService } from '../services/wallpaperService'
+import { WallpaperMode } from '../types'
 import { MonitorSelector } from './MonitorSelector'
 
 export const WallpaperPanel: React.FC = () => {
@@ -11,10 +12,12 @@ export const WallpaperPanel: React.FC = () => {
     currentWallpaper,
     previewImage,
     selectedMonitor,
+    mode,
     isApplying,
     error,
     setCurrentWallpaper,
     setPreviewImage,
+    setMode,
     setIsApplying,
     setError,
   } = useWallpaperStore()
@@ -52,6 +55,21 @@ export const WallpaperPanel: React.FC = () => {
   }, [setCurrentWallpaper, setPreviewImage, setError])
 
   /**
+   * Handle wallpaper mode change
+   */
+  const handleModeChange = useCallback((newMode: WallpaperMode) => {
+    const validation = WallpaperService.validateModeTransition(mode, newMode)
+
+    if (!validation.valid) {
+      setError(validation.message || 'Invalid mode transition')
+      return
+    }
+
+    setError(null)
+    setMode(newMode)
+  }, [mode, setMode, setError])
+
+  /**
    * Handle wallpaper application
    */
   const handleApplyClick = useCallback(async () => {
@@ -79,6 +97,40 @@ export const WallpaperPanel: React.FC = () => {
   return (
     <div className="w-full max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Wallpaper Settings</h2>
+
+      {/* Mode Toggle Section */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          Wallpaper Mode
+        </label>
+        <div className="flex gap-4">
+          <button
+            onClick={() => handleModeChange('fixed')}
+            className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+              mode === 'fixed'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
+            }`}
+          >
+            Fixed Mode
+          </button>
+          <button
+            onClick={() => handleModeChange('variable')}
+            className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+              mode === 'variable'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
+            }`}
+          >
+            Variable Mode
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {mode === 'fixed'
+            ? '📌 Fixed Mode: Single wallpaper applied and stays constant'
+            : '🔄 Variable Mode: Enable scheduling and rotation features'}
+        </p>
+      </div>
 
       {/* File Browser Section */}
       <div className="mb-6">
@@ -117,6 +169,36 @@ export const WallpaperPanel: React.FC = () => {
       <div className="mb-6">
         <MonitorSelector />
       </div>
+
+      {/* Scheduling Section - Only visible in Variable Mode */}
+      {mode === 'variable' && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+          <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
+            ⏰ Scheduling
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+            Set wallpaper changes at specific times of day
+          </p>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed text-sm font-medium">
+            Configure Schedule
+          </button>
+        </div>
+      )}
+
+      {/* Rotation Section - Only visible in Variable Mode */}
+      {mode === 'variable' && (
+        <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900 rounded-lg border border-purple-200 dark:border-purple-700">
+          <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
+            🔄 Rotation
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+            Automatically rotate through multiple wallpapers
+          </p>
+          <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed text-sm font-medium">
+            Configure Rotation
+          </button>
+        </div>
+      )}
 
       {/* Error Message */}
       {error && (

@@ -34,6 +34,7 @@ const initialState: AppState = {
   version: '1.0.0',
   wallpaper: {
     currentPath: '',
+    mode: 'fixed',
   },
   theme: {
     mode: 'light',
