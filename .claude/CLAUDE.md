@@ -100,6 +100,36 @@ When an agent is active:
 
 **Format:** Use `docs/validation-reports/STORY-VALIDATION-YYYY-MM-DD.md` as the template (see existing reports)
 
+### ⚠️ MANDATORY: Story Status Synchronization (Story File Updates)
+
+**CRITICAL RULE - ALWAYS EXECUTE:**
+
+After ANY validation, review, or gate decision, the **story file status field MUST be updated** to match the verdict. This keeps `docs/stories/` synchronized with `docs/qa/gates/` and is non-negotiable.
+
+**Rules by Agent & Verdict:**
+
+| Agent | Action | Verdict | Update Status To | Change Log Entry |
+|-------|--------|---------|------------------|-----------------|
+| **@qa** | `*review` or `*gate` completes | PASS | `Done` | "✅ QA PASS - complete and approved" |
+| **@qa** | `*review` or `*gate` completes | FAIL | `InProgress` | "❌ QA FAIL - return to @dev for fixes" |
+| **@qa** | `*review` or `*gate` completes | CONCERNS | `Done` | "⚠️ QA CONCERNS - approved with observations" |
+| **@qa** | `*review` or `*gate` completes | WAIVED | `Done` | "⚠️ QA WAIVED - approved with waiver documented" |
+| **@dev** | Implementation complete | Ready for QA | `Ready for Review` | "Implementation complete - ready for QA review" |
+| **@devops** | GitHub push succeeds | Pushed | `Done` | "✅ Pushed to GitHub: {commit-hash}" |
+
+**Implementation:**
+1. Update the `status: "..."` field at the top of the story file (YAML frontmatter)
+2. Append a timestamped entry to the Change Log section with agent name + verdict
+3. Do NOT create a new commit yet — that's handled by @devops
+
+**Why:** 
+- Story files are the source of truth for stakeholders and handoffs
+- Gate files (`docs/qa/gates/`) are detailed reports but live in QA folder
+- Status mismatch = confusion, missed handoffs, wasted time
+- This is a process lock — not a suggestion, a requirement
+
+**Enforcement:** This rule is in CLAUDE.md (permanent). All agents verify on activation.
+
 ### Code Standards
 - Write clean, self-documenting code
 - Follow existing patterns in the codebase
