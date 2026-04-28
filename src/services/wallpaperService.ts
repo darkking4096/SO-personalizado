@@ -13,7 +13,7 @@
  * - Dynamic wallpaper rotation
  */
 
-import { WallpaperMode } from '../types'
+import { WallpaperMode, Preset, RotationConfig } from '../types'
 
 export interface WallpaperConfig {
   path: string
@@ -50,6 +50,7 @@ export class WallpaperService {
   private static schedulerInterval: NodeJS.Timeout | null = null
   private static lastAppliedScheduleId: string | null = null
   private static schedulerStore: Map<string, Schedule> = new Map()
+  private static presetStore: Map<string, Preset> = new Map()
 
   /**
    * Clear all schedules (for testing)
@@ -422,5 +423,104 @@ export class WallpaperService {
     }
 
     return { valid: true }
+  }
+
+  /**
+   * Get all presets (Story 1.5)
+   * @returns Array of presets
+   */
+  static getPresets(): Preset[] {
+    return Array.from(this.presetStore.values())
+  }
+
+  /**
+   * Save a new preset (Story 1.5)
+   * @param name Preset name
+   * @param config Rotation configuration
+   * @returns Preset with ID or error
+   */
+  static savePreset(name: string, config: RotationConfig): { success: boolean; preset?: Preset; error?: string } {
+    try {
+      if (!name || name.trim() === '') {
+        return { success: false, error: 'Preset name cannot be empty' }
+      }
+
+      if (!config || !config.mode) {
+        return { success: false, error: 'Invalid rotation configuration' }
+      }
+
+      const preset: Preset = {
+        id: `preset_${Date.now()}`,
+        name: name.trim(),
+        config,
+        createdAt: new Date(),
+      }
+
+      this.presetStore.set(preset.id, preset)
+      console.log(`[WallpaperService] Saved preset: ${preset.id} (${name})`)
+      return { success: true, preset }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, error: `Failed to save preset: ${message}` }
+    }
+  }
+
+  /**
+   * Delete a preset (Story 1.5)
+   * @param presetId Preset ID to delete
+   * @returns Success status
+   */
+  static deletePreset(presetId: string): { success: boolean; error?: string } {
+    try {
+      if (!this.presetStore.has(presetId)) {
+        return { success: false, error: 'Preset not found' }
+      }
+
+      this.presetStore.delete(presetId)
+      console.log(`[WallpaperService] Deleted preset: ${presetId}`)
+      return { success: true }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, error: `Failed to delete preset: ${message}` }
+    }
+  }
+
+  /**
+   * Apply a preset configuration (Story 1.5)
+   * @param presetId Preset ID to apply
+   * @returns Success status with applied config
+   */
+  static applyPreset(presetId: string): { success: boolean; config?: RotationConfig; error?: string } {
+    try {
+      const preset = this.presetStore.get(presetId)
+      if (!preset) {
+        return { success: false, error: 'Preset not found' }
+      }
+
+      console.log(`[WallpaperService] Applied preset: ${presetId} (${preset.name})`)
+      return { success: true, config: preset.config }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, error: `Failed to apply preset: ${message}` }
+    }
+  }
+
+  /**
+   * Load presets from storage (Story 1.5)
+   * @param presets Array of presets to load
+   * @returns Success status
+   */
+  static loadPresets(presets: Preset[]): { success: boolean; error?: string } {
+    try {
+      this.presetStore.clear()
+      presets.forEach((preset) => {
+        this.presetStore.set(preset.id, preset)
+      })
+      console.log(`[WallpaperService] Loaded ${presets.length} presets`)
+      return { success: true }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, error: `Failed to load presets: ${message}` }
+    }
   }
 }

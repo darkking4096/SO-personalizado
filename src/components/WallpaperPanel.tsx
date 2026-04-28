@@ -1,12 +1,17 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useWallpaperStore } from '../stores/wallpaperStore'
 import { WallpaperService } from '../services/wallpaperService'
-import { WallpaperMode } from '../types'
+import { WallpaperMode, RotationConfig } from '../types'
 import { MonitorSelector } from './MonitorSelector'
+import { PresetSelector } from './PresetSelector'
+import { SavePresetDialog } from './SavePresetDialog'
+import { DEFAULT_PRESETS } from '../data/wallpaperPresets'
 
 export const WallpaperPanel: React.FC = () => {
   const [fileName, setFileName] = useState<string>('')
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [showSavePresetDialog, setShowSavePresetDialog] = useState(false)
+  const [currentRotationConfig, setCurrentRotationConfig] = useState<RotationConfig | null>(null)
 
   const {
     currentWallpaper,
@@ -15,12 +20,25 @@ export const WallpaperPanel: React.FC = () => {
     mode,
     isApplying,
     error,
+    presets,
+    activePresetId,
     setCurrentWallpaper,
     setPreviewImage,
     setMode,
     setIsApplying,
     setError,
+    setPresets,
+    setActivePresetId,
+    addPreset,
   } = useWallpaperStore()
+
+  // Load default presets on mount (Story 1.5)
+  useEffect(() => {
+    if (presets.length === 0) {
+      setPresets(DEFAULT_PRESETS)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presets.length])
 
   /**
    * Handle file selection via file browser
@@ -185,20 +203,56 @@ export const WallpaperPanel: React.FC = () => {
         </div>
       )}
 
-      {/* Rotation Section - Only visible in Variable Mode */}
+      {/* Presets Section - Only visible in Variable Mode (Story 1.5) */}
       {mode === 'variable' && (
         <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900 rounded-lg border border-purple-200 dark:border-purple-700">
           <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-            🔄 Rotation
+            🔄 Rotation Presets
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-            Automatically rotate through multiple wallpapers
-          </p>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed text-sm font-medium">
-            Configure Rotation
+
+          {/* Preset Selector */}
+          <div className="mb-4">
+            <PresetSelector
+              presets={presets}
+              activePresetId={activePresetId}
+              onPresetSelect={(presetId) => {
+                setActivePresetId(presetId)
+                const preset = presets.find((p) => p.id === presetId)
+                if (preset) {
+                  setCurrentRotationConfig(preset.config)
+                }
+              }}
+              onDeletePreset={(presetId) => {
+                if (activePresetId === presetId) {
+                  setActivePresetId(null)
+                }
+              }}
+            />
+          </div>
+
+          {/* Save Custom Preset Button */}
+          <button
+            onClick={() => setShowSavePresetDialog(true)}
+            className="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed text-sm font-medium"
+          >
+            💾 Save Custom Preset
           </button>
         </div>
       )}
+
+      {/* Save Preset Dialog */}
+      <SavePresetDialog
+        isOpen={showSavePresetDialog}
+        currentConfig={currentRotationConfig || { mode: 'sequential', intervalMinutes: 30, imagePool: [] }}
+        onSave={(name) => {
+          const newPreset = {
+            name,
+            config: currentRotationConfig || { mode: 'sequential', intervalMinutes: 30, imagePool: [] },
+          }
+          addPreset(newPreset)
+        }}
+        onClose={() => setShowSavePresetDialog(false)}
+      />
 
       {/* Error Message */}
       {error && (

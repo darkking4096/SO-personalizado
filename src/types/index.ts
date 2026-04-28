@@ -60,6 +60,14 @@ export interface KeyboardShortcut {
   category: string
 }
 
+// Preset types (Story 1.5)
+export interface Preset {
+  id: string
+  name: string
+  config: RotationConfig
+  createdAt: Date
+}
+
 // Profile types
 export interface Profile {
   id: string
@@ -69,6 +77,10 @@ export interface Profile {
   taskbar?: Partial<TaskbarState>
   theme?: ThemeState
   shortcuts?: string[]
+  rotation?: {
+    presets?: Preset[]
+    activePresetId?: string | null
+  }
   createdAt: string
   updatedAt: string
 }

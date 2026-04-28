@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { WallpaperMode } from '../types'
+import { WallpaperMode, Preset } from '../types'
 
 export interface Monitor {
   id: string
@@ -30,6 +30,10 @@ interface WallpaperStoreState {
   schedules: Schedule[]
   isSchedulerRunning: boolean
 
+  // Preset management (Story 1.5)
+  presets: Preset[]
+  activePresetId: string | null
+
   // Actions
   setCurrentWallpaper: (path: string, monitorId?: string) => void
   setPreviewImage: (imageData: string | null) => void
@@ -47,6 +51,14 @@ interface WallpaperStoreState {
   setIsSchedulerRunning: (running: boolean) => void
   clearSchedules: () => void
 
+  // Preset actions (Story 1.5)
+  addPreset: (preset: Omit<Preset, 'id' | 'createdAt'>) => void
+  deletePreset: (presetId: string) => void
+  applyPreset: (presetId: string) => void
+  setPresets: (presets: Preset[]) => void
+  getPresets: () => Preset[]
+  setActivePresetId: (presetId: string | null) => void
+
   reset: () => void
 }
 
@@ -60,6 +72,8 @@ const initialState = {
   error: null,
   schedules: [],
   isSchedulerRunning: false,
+  presets: [],
+  activePresetId: null,
 }
 
 export const useWallpaperStore = create<WallpaperStoreState>((set, get) => ({
@@ -109,6 +123,37 @@ export const useWallpaperStore = create<WallpaperStoreState>((set, get) => ({
   setIsSchedulerRunning: (running) => set({ isSchedulerRunning: running }),
 
   clearSchedules: () => set({ schedules: [] }),
+
+  // Preset actions (Story 1.5)
+  addPreset: (preset) => {
+    const newPreset: Preset = {
+      ...preset,
+      id: `preset_${Date.now()}`,
+      createdAt: new Date(),
+    }
+    set(({ presets }) => ({
+      presets: [...presets, newPreset],
+      error: null,
+    }))
+  },
+
+  deletePreset: (presetId) =>
+    set((state) => ({
+      presets: state.presets.filter((p) => p.id !== presetId),
+      activePresetId: state.activePresetId === presetId ? null : state.activePresetId,
+    })),
+
+  applyPreset: (presetId) => {
+    set({
+      activePresetId: presetId,
+    })
+  },
+
+  setPresets: (presets) => set({ presets }),
+
+  getPresets: () => get().presets,
+
+  setActivePresetId: (presetId) => set({ activePresetId: presetId }),
 
   reset: () => set(initialState),
 }))
