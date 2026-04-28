@@ -1,0 +1,96 @@
+================================================================================
+                  PRE-PUSH CHECKLIST — Personalización SO
+                   Verifique antes de fazer QUALQUER push
+================================================================================
+
+ANTES DE FAZER PUSH:
+
+1. ✅ Git status limpo?
+   $ git status
+   → Deve mostrar: "nothing to commit, working tree clean"
+
+2. ✅ Você está na branch correta?
+   $ git branch
+   → Para feature: feature/seu-nome
+   → Para release: master ou develop
+
+3. ✅ Lint passou?
+   $ npm run lint
+   → Sem erros (warnings são ok)
+
+4. ✅ TypeScript passou?
+   $ npm run typecheck
+   → Sem erros de tipo
+
+5. ✅ Testes passaram?
+   $ npm test
+   → Todos os testes verde
+
+6. ✅ Build funcionou?
+   $ npm run build
+   → Sem erros, gerou /dist/
+
+================================================================================
+
+QUANDO TUDO PASSAR:
+
+A. Se você tiver GitHub CLI instalado:
+   $ gh pr create --title "feat: ..." --body "## Summary\n..."
+
+B. Se você NÃO tiver GitHub CLI:
+   1. $ git push origin [seu-branch]
+   2. Acesse: https://github.com/darkking4096/SO-personalizado
+   3. Clique em "New Pull Request"
+   4. Selecione branches e crie PR
+
+================================================================================
+
+DURANTE O PUSH:
+
+- GitHub Actions vai rodar automaticamente (vide .github/workflows/build.yml)
+- Espere todos os checks passar (2-5 minutos)
+- Se algum check falhar: volte, fix, commit novo, push novamente
+- Se passar: aguarde aprovação (se branch protection estiver ativa)
+
+================================================================================
+
+DEPOIS DO MERGE:
+
+- Master é atualizada automaticamente
+- Feature branch pode ser deletada
+- Parabéns! Deploy feito com sucesso
+
+================================================================================
+
+ERROS COMUNS:
+
+❌ "Permission denied (publickey)" ao fazer push?
+   → GitHub CLI não autenticado
+   → Execute: gh auth login
+
+❌ "nothing to commit" mas queria fazer push?
+   → Mudanças não foram adicionadas
+   → Execute: git add . && git commit -m "..."
+
+❌ Tests falhando?
+   → Rode: npm test -- --reporter=verbose
+   → Procure a falha, fix, commit novo
+
+❌ Lint errors?
+   → Rode: npm run lint (auto-fix)
+   → Depois: git add . && git commit
+
+================================================================================
+
+DÚVIDAS?
+
+Vide:
+- SETUP-CHECKLIST.md — Setup completo
+- DEVOPS-INIT-REPORT.md — Status detalhado
+- Ou execute: *health-check (diagnostica tudo)
+
+================================================================================
+
+Data: 2026-04-28
+Criado por: Gage (DevOps Agent)
+Repositório: https://github.com/darkking4096/SO-personalizado
