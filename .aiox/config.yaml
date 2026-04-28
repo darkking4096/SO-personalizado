@@ -1,0 +1,22 @@
+# AIOX Project Configuration
+version: 2.1.0
+
+project:
+  name: personalizacao-so
+  type: greenfield
+  created: 2026-04-28
+
+environment:
+  bootstrapped: true
+  bootstrap_date: 2026-04-28T11:01:00
+
+workflow:
+  current: story-development-cycle
+  phase: 1-prd-ready
+
+permissions:
+  mode: ask
+
+settings:
+  auto_update_status: true
+  quality_gates_enabled: true

@@ -1,0 +1,74 @@
+generated_at: "2026-04-28T13:52:00Z"
+project_name: "Personalização SO"
+
+system:
+  os: "Windows 11 Pro"
+  architecture: "x64"
+  user: "HomePC"
+  hostname: "HOMEPC"
+
+cli_tools:
+  git:
+    installed: true
+    version: "2.51.0"
+    status: "✅ OK"
+  
+  gh:
+    installed: true
+    version: "2.x"
+    path: "C:\\Program Files\\GitHub CLI\\gh.exe"
+    authenticated: false
+    status: "✅ Instalado, aguardando autenticação"
+    next_step: "! gh auth login"
+  
+  node:
+    installed: true
+    version: "20.12.2"
+    status: "✅ OK"
+  
+  npm:
+    installed: true
+    version: "10.5.0"
+    status: "✅ OK"
+  
+  supabase:
+    installed: false
+    version: null
+    status: "❌ Not installed (optional)"
+    note: "Installation failed - can be retried later"
+  
+  railway:
+    installed: true
+    version: "available via @railway/cli"
+    status: "✅ OK"
+  
+  docker:
+    installed: true
+    version: "28.3.2"
+    status: "✅ OK"
+  
+  coderabbit:
+    installed: false
+    version: null
+    status: "⚠️ Requires WSL setup"
+    next_step: "WSL users: curl -fsSL https://coderabbit.ai/install.sh | bash"
+
+repository:
+  initialized: true
+  remote_url: null
+  branch: "master"
+  has_commits: true
+
+validation:
+  essential_complete: true
+  recommended_complete: false
+  ready_for_development: true
+
+project_structure:
+  - .aiox/
+  - docs/
+  - src/
+  - tests/
+  - package.json
+  - .gitignore
+  - README.md
