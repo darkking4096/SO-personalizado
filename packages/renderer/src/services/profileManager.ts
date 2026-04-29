@@ -8,7 +8,7 @@
 
 import { promises as fs } from 'fs'
 import path from 'path'
-import type { Profile } from '../types'
+import type { Profile } from '../types/index'
 
 export class ProfileManager {
   private static readonly PROFILES_DIR = path.join(
@@ -297,11 +297,11 @@ export class ProfileManager {
 
     try {
       // Validate wallpaper file exists
-      if (profile.wallpaper) {
+      if (profile.wallpaper?.path) {
         try {
-          await fs.access(profile.wallpaper)
+          await fs.access(profile.wallpaper.path)
         } catch {
-          issues.push(`Wallpaper file not found: ${profile.wallpaper}`)
+          issues.push(`Wallpaper file not found: ${profile.wallpaper.path}`)
         }
       }
 
@@ -349,11 +349,11 @@ export class ProfileManager {
   static async validateProfile(profile: Profile): Promise<boolean> {
     try {
       // Validate wallpaper file exists
-      if (profile.wallpaper) {
+      if (profile.wallpaper?.path) {
         try {
-          await fs.access(profile.wallpaper)
+          await fs.access(profile.wallpaper.path)
         } catch {
-          throw new Error(`Wallpaper file not found: ${profile.wallpaper}`)
+          throw new Error(`Wallpaper file not found: ${profile.wallpaper.path}`)
         }
       }
 

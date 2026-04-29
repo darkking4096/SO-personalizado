@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import type { Profile } from '@shared/types'
-import { ProfileManager } from '@shared/services/profileManager'
+import type { Profile } from '../src/types'
+import { ProfileManager } from '../src/services/profileManager'
 
 describe('ProfileManager', () => {
   const mockProfile: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'> = {

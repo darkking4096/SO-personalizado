@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useProfileStore } from '../stores/profileStore'
 import { ProfileManager as ProfileService } from '../services/profileManager'
-import type { Profile } from '../types'
+import type { Profile } from '../types/index'
 
 export const ProfileManager: React.FC = () => {
   const [defaultProfileId, setDefaultProfileId] = useState<string | null>(null)

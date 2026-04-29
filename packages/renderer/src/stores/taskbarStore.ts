@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { TaskbarState } from '../types'
+import { TaskbarState } from '../types/index'
 
 interface TaskbarStoreState extends TaskbarState {
   isApplying: boolean

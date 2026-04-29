@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { WallpaperService } from '../src/services/wallpaperService'
-import type { RotationConfig, RotationMode } from '@shared/types/index.js'
+import type { RotationConfig, RotationMode } from '../src/types/index.js'
 
 describe('WallpaperService - Rotation Engine', () => {
   let service: WallpaperService

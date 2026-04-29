@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { WallpaperService } from '@shared/services/wallpaperService'
-import type { Schedule } from '@shared/services/wallpaperService'
+import { WallpaperService } from '../src/services/wallpaperService'
+import type { Schedule } from '../src/services/wallpaperService'
 
 // Helper to access private clearSchedules method
 interface WallpaperServiceTest {

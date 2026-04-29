@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react'
-import { RotationConfig } from '../types'
+import { RotationConfig } from '../types/index'
 import { WallpaperService } from '../services/wallpaperService'
 
 interface SavePresetDialogProps {
@@ -35,7 +35,7 @@ export const SavePresetDialog: React.FC<SavePresetDialogProps> = ({
       return
     }
 
-    const result = WallpaperService.savePreset(presetName, currentConfig)
+    const result = WallpaperService.getGlobalInstance().savePreset(presetName, currentConfig)
     if (result.success) {
       onSave(presetName)
       setPresetName('')
@@ -85,7 +85,7 @@ export const SavePresetDialog: React.FC<SavePresetDialogProps> = ({
               <div className="text-sm text-gray-200 space-y-1">
                 <p>• Mode: <span className="font-semibold">{currentConfig.mode}</span></p>
                 <p>• Interval: <span className="font-semibold">{currentConfig.intervalMinutes} minutes</span></p>
-                <p>• Images: <span className="font-semibold">{currentConfig.imagePool.length} selected</span></p>
+                <p>• Images: <span className="font-semibold">{currentConfig.imagePool?.length ?? 0} selected</span></p>
               </div>
             </div>
           )}

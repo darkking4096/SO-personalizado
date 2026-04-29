@@ -10,8 +10,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { ProfileManager } from '@shared/services/profileManager'
-import type { Profile } from '@shared/types'
+import { ProfileManager } from '../src/services/profileManager'
+import type { Profile } from '../src/types'
 
 // Mock environment
 const mockAppDataDir = path.join(process.cwd(), '.test-data', 'PersonalizacionSO')

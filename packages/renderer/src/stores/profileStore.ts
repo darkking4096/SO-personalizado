@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Profile } from '../types'
+import type { Profile } from '../types/index'
 
 interface ApplyProgress {
   current: string

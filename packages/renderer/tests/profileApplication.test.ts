@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ProfileManager } from '@shared/services/profileManager'
-import { KeyboardShortcutService } from '@shared/services/keyboardShortcutService'
-import type { Profile } from '@shared/types'
+import { ProfileManager } from '../src/services/profileManager'
+import { KeyboardShortcutService } from '../src/services/keyboardShortcutService'
+import type { Profile } from '../src/types'
 
 describe('ProfileApplication - Story 3.3', () => {
   const mockProfile: Profile = {

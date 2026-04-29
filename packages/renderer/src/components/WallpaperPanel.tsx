@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useWallpaperStore } from '../stores/wallpaperStore'
 import { WallpaperService } from '../services/wallpaperService'
-import { WallpaperMode, RotationConfig } from '../types'
+import { WallpaperMode, RotationConfig } from '../types/index'
+import { wallpaperPresets } from '../data/wallpaperPresets'
 import { MonitorSelector } from './MonitorSelector'
 import { PresetSelector } from './PresetSelector'
 import { SavePresetDialog } from './SavePresetDialog'
-import { DEFAULT_PRESETS } from '../data/wallpaperPresets'
 
 export const WallpaperPanel: React.FC = () => {
   const [fileName, setFileName] = useState<string>('')
@@ -35,7 +35,7 @@ export const WallpaperPanel: React.FC = () => {
   // Load default presets on mount (Story 1.5)
   useEffect(() => {
     if (presets.length === 0) {
-      setPresets(DEFAULT_PRESETS)
+      setPresets(wallpaperPresets)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presets.length])
@@ -56,11 +56,11 @@ export const WallpaperPanel: React.FC = () => {
       setPreviewLoading(true)
 
       // Validate and load preview
-      const result = await WallpaperService.selectWallpaper(filePath)
+      const result = await WallpaperService.getGlobalInstance().selectWallpaper(filePath)
 
       if (result.success) {
         setFileName(filePath.split('\\').pop() || filePath)
-        setCurrentWallpaper(filePath)
+        setCurrentWallpaper({ path: filePath })
         setPreviewImage(result.preview || null)
       } else {
         setError(result.error || 'Failed to select wallpaper')
@@ -76,7 +76,7 @@ export const WallpaperPanel: React.FC = () => {
    * Handle wallpaper mode change
    */
   const handleModeChange = useCallback((newMode: WallpaperMode) => {
-    const validation = WallpaperService.validateModeTransition(mode, newMode)
+    const validation = WallpaperService.getGlobalInstance().validateModeTransition(mode, newMode)
 
     if (!validation.valid) {
       setError(validation.message || 'Invalid mode transition')
@@ -100,7 +100,7 @@ export const WallpaperPanel: React.FC = () => {
       setError(null)
       setIsApplying(true)
 
-      const result = await WallpaperService.applyWallpaper(currentWallpaper.path, selectedMonitor)
+      const result = await WallpaperService.getGlobalInstance().applyWallpaper(currentWallpaper.path, selectedMonitor)
 
       if (!result.success) {
         setError(result.error || 'Failed to apply wallpaper')
@@ -246,8 +246,10 @@ export const WallpaperPanel: React.FC = () => {
         currentConfig={currentRotationConfig || { mode: 'sequential', intervalMinutes: 30, imagePool: [] }}
         onSave={(name) => {
           const newPreset = {
+            id: `preset_${Date.now()}`,
             name,
             config: currentRotationConfig || { mode: 'sequential', intervalMinutes: 30, imagePool: [] },
+            createdAt: new Date(),
           }
           addPreset(newPreset)
         }}

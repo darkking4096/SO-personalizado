@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useWallpaperStore, type Schedule } from '@shared/stores/wallpaperStore'
+import { useWallpaperStore, type Schedule } from '../stores/wallpaperStore'
 import { TimePickerWidget } from './TimePickerWidget'
 
 /**
@@ -31,7 +31,7 @@ export const ScheduleBuilder: React.FC = () => {
     }
 
     // Check for duplicate times
-    if (schedules.some((s) => s.time === newScheduleTime)) {
+    if (schedules.some((s: Schedule) => s.time === newScheduleTime)) {
       setError('A schedule for this time already exists')
       return
     }
@@ -44,6 +44,7 @@ export const ScheduleBuilder: React.FC = () => {
 
     try {
       addSchedule({
+        id: `schedule_${Date.now()}`,
         time: newScheduleTime,
         imagePath: newScheduleImage,
         enabled: true,

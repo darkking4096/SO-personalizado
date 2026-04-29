@@ -7,13 +7,14 @@
  * - Time-based scheduling (e.g., sunrise/sunset wallpaper change)
  * - Profile-based rotation (save and apply wallpaper groups)
  * - Wallpaper mode toggle (fixed/variable)
+ * - Rotation modes: sequential, random, weighted-random
  *
  * Features (v1.1 - deferred):
  * - Animated wallpapers (GIF, MP4, WebM)
  * - Dynamic wallpaper rotation
  */
 
-import { WallpaperMode, Preset, RotationConfig } from '../types'
+import { WallpaperMode, Preset, RotationConfig, RotationMode } from '../types/index'
 
 export interface WallpaperConfig {
   path: string
@@ -47,16 +48,126 @@ export interface Schedule {
  * Windows API constants (SPI_SETDESKWALLPAPER, Registry paths) are defined in main process
  */
 export class WallpaperService {
-  private static schedulerInterval: NodeJS.Timeout | null = null
-  private static lastAppliedScheduleId: string | null = null
-  private static schedulerStore: Map<string, Schedule> = new Map()
-  private static presetStore: Map<string, Preset> = new Map()
+  // Instance state for rotation
+  private rotationInterval: NodeJS.Timeout | null = null
+  private currentConfig: RotationConfig | null = null
+  private sequentialIndex: number = 0
+
+  // Scheduler state
+  private schedulerInterval: NodeJS.Timeout | null = null
+  private lastAppliedScheduleId: string | null = null
+  private schedulerStore: Map<string, Schedule> = new Map()
+  private presetStore: Map<string, Preset> = new Map()
+
+  constructor() {
+    // Initialize instance state
+    this.rotationInterval = null
+    this.sequentialIndex = 0
+    this.currentConfig = null
+  }
+
+  /**
+   * Get next rotation image based on mode
+   * @param mode Rotation mode (sequential, random, weighted)
+   * @param imagePool Array of image paths
+   * @param weights Optional weight distribution for weighted mode
+   * @returns Next image path
+   */
+  getNextRotationImage(
+    mode: RotationMode,
+    imagePool: string[],
+    weights?: Record<string, number>
+  ): string {
+    if (!imagePool || imagePool.length === 0) {
+      throw new Error('Image pool is empty')
+    }
+
+    if (!['sequential', 'random', 'weighted-random', 'weighted'].includes(mode)) {
+      throw new Error('Unknown rotation mode')
+    }
+
+    if (mode === 'sequential') {
+      const image = imagePool[this.sequentialIndex]
+      this.sequentialIndex = (this.sequentialIndex + 1) % imagePool.length
+      return image
+    }
+
+    if (mode === 'random') {
+      return imagePool[Math.floor(Math.random() * imagePool.length)]
+    }
+
+    if (mode === 'weighted-random' || mode === 'weighted') {
+      if (!weights || Object.keys(weights).length === 0) {
+        // Fallback to random if no weights
+        return imagePool[Math.floor(Math.random() * imagePool.length)]
+      }
+
+      // Create weighted selection
+      const totalWeight = imagePool.reduce((sum, img) => sum + (weights[img] || 1), 0)
+      const random = Math.random() * totalWeight
+      let accumulated = 0
+
+      for (const img of imagePool) {
+        accumulated += weights[img] || 1
+        if (random <= accumulated) {
+          return img
+        }
+      }
+
+      // Fallback
+      return imagePool[imagePool.length - 1]
+    }
+
+    return imagePool[0]
+  }
+
+  /**
+   * Start wallpaper rotation
+   * @param config Rotation configuration
+   */
+  startRotation(config: RotationConfig): void {
+    if (!config || !config.imagePool || config.imagePool.length === 0) {
+      throw new Error('Image pool cannot be empty')
+    }
+
+    // Stop any existing rotation
+    if (this.rotationInterval) {
+      clearInterval(this.rotationInterval)
+    }
+
+    this.currentConfig = config
+    this.sequentialIndex = 0
+
+    const interval = ((config as any).intervalMinutes || 5) * 60 * 1000
+    this.rotationInterval = setInterval(() => {
+      if (this.currentConfig) {
+        const nextImage = this.getNextRotationImage(
+          this.currentConfig.mode,
+          this.currentConfig.imagePool || [],
+          (this.currentConfig as any).weights
+        )
+        console.log(`[WallpaperService] Applying rotated wallpaper: ${nextImage}`)
+        // In real implementation, apply via IPC
+      }
+    }, interval)
+  }
+
+  /**
+   * Stop wallpaper rotation
+   */
+  stopRotation(): void {
+    if (this.rotationInterval) {
+      clearInterval(this.rotationInterval)
+      this.rotationInterval = null
+    }
+    this.currentConfig = null
+  }
 
   /**
    * Clear all schedules (for testing)
    * @private
    */
-  static clearSchedules(): void {
+  clearSchedules(): void {
     this.schedulerStore.clear()
     this.lastAppliedScheduleId = null
   }
@@ -66,7 +177,7 @@ export class WallpaperService {
    * @param filePath Path to image file
    * @returns Base64 encoded image data
    */
-  static async selectWallpaper(filePath: string): Promise<{ success: boolean; preview?: string; error?: string }> {
+  async selectWallpaper(filePath: string): Promise<{ success: boolean; preview?: string; error?: string }> {
     try {
       if (!this.validateFormat(filePath)) {
         return { success: false, error: 'Unsupported image format. Supported: JPEG, PNG, BMP, WEBP' }
@@ -89,7 +200,7 @@ export class WallpaperService {
    * @param monitorId Monitor ID ('all' or specific monitor ID)
    * @returns Success status with message
    */
-  static async applyWallpaper(
+  async applyWallpaper(
     filePath: string,
     monitorId: string = 'all'
   ): Promise<{ success: boolean; message?: string; error?: string }> {
@@ -117,7 +228,7 @@ export class WallpaperService {
    * Get currently set wallpaper
    * @returns Current wallpaper path
    */
-  static async getWallpaper(): Promise<{ success: boolean; path?: string; error?: string }> {
+  async getWallpaper(): Promise<{ success: boolean; path?: string; error?: string }> {
     try {
       // In actual implementation, read from Registry:
       // HKEY_CURRENT_USER\Control Panel\Desktop\Wallpaper
@@ -133,7 +244,7 @@ export class WallpaperService {
    * Get list of available monitors
    * @returns Array of connected monitors
    */
-  static async getAvailableMonitors(): Promise<{ success: boolean; monitors?: Monitor[]; error?: string }> {
+  async getAvailableMonitors(): Promise<{ success: boolean; monitors?: Monitor[]; error?: string }> {
     try {
       // In actual implementation, enumerate displays via Windows API
       // EnumDisplayMonitors or GetSystemMetrics
@@ -150,7 +261,7 @@ export class WallpaperService {
    * @param schedule Schedule configuration with time-based rules
    * @returns Success status
    */
-  static async scheduleWallpaper(schedule: WallpaperConfig['schedule']): Promise<{ success: boolean; message?: string; error?: string }> {
+  async scheduleWallpaper(schedule: WallpaperConfig['schedule']): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
       if (!schedule || !schedule.times || schedule.times.length === 0) {
         return { success: false, error: 'Invalid schedule configuration' }
@@ -177,7 +288,7 @@ export class WallpaperService {
    * @param schedule Schedule to add
    * @returns Success status
    */
-  static addSchedule(schedule: Schedule): { success: boolean; error?: string } {
+  addSchedule(schedule: Schedule): { success: boolean; error?: string } {
     try {
       if (!this.validateTimeFormat(schedule.time)) {
         return { success: false, error: 'Invalid time format. Use HH:MM' }
@@ -201,7 +312,7 @@ export class WallpaperService {
    * @param scheduleId Schedule ID to remove
    * @returns Success status
    */
-  static removeSchedule(scheduleId: string): { success: boolean; error?: string } {
+  removeSchedule(scheduleId: string): { success: boolean; error?: string } {
     try {
       this.schedulerStore.delete(scheduleId)
       console.log(`[WallpaperService] Removed schedule: ${scheduleId}`)
@@ -216,7 +327,7 @@ export class WallpaperService {
    * Get all schedules
    * @returns Array of schedules
    */
-  static getSchedules(): Schedule[] {
+  getSchedules(): Schedule[] {
     return Array.from(this.schedulerStore.values())
   }
 
@@ -226,7 +337,7 @@ export class WallpaperService {
    * @param updates Partial schedule updates
    * @returns Success status
    */
-  static updateSchedule(
+  updateSchedule(
     scheduleId: string,
     updates: Partial<Omit<Schedule, 'id'>>
   ): { success: boolean; error?: string } {
@@ -259,7 +370,7 @@ export class WallpaperService {
    * Checks every minute for scheduled wallpaper changes
    * @returns Success status
    */
-  static startScheduler(): { success: boolean; message?: string; error?: string } {
+  startScheduler(): { success: boolean; message?: string; error?: string } {
     try {
       if (this.schedulerInterval) {
         return { success: false, error: 'Scheduler is already running' }
@@ -282,7 +393,7 @@ export class WallpaperService {
    * Stop the background scheduler
    * @returns Success status
    */
-  static stopScheduler(): { success: boolean; message?: string; error?: string } {
+  stopScheduler(): { success: boolean; message?: string; error?: string } {
     try {
       if (this.schedulerInterval) {
         clearInterval(this.schedulerInterval)
@@ -302,7 +413,7 @@ export class WallpaperService {
    * Allows ±5 minute tolerance window
    * @private
    */
-  private static checkSchedules(): void {
+  private checkSchedules(): void {
     const now = new Date()
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(
       now.getMinutes()
@@ -330,7 +441,7 @@ export class WallpaperService {
    * @returns True if within tolerance
    * @private
    */
-  private static isTimeInTolerance(
+  private isTimeInTolerance(
     currentTime: string,
     scheduledTime: string,
     toleranceMinutes: number
@@ -351,7 +462,7 @@ export class WallpaperService {
    * @param schedule Schedule to apply
    * @private
    */
-  private static async applyScheduledWallpaper(schedule: Schedule): Promise<void> {
+  private async applyScheduledWallpaper(schedule: Schedule): Promise<void> {
     try {
       console.log(
         `[WallpaperService] Applying scheduled wallpaper: ${schedule.imagePath} (schedule: ${schedule.id})`
@@ -375,7 +486,7 @@ export class WallpaperService {
    * @returns True if valid
    * @private
    */
-  private static validateTimeFormat(time: string): boolean {
+  private validateTimeFormat(time: string): boolean {
     const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/
     return timeRegex.test(time)
   }
@@ -385,7 +496,7 @@ export class WallpaperService {
    * @param path Path to validate
    * @returns Validation result
    */
-  static validateFormat(path: string): boolean {
+  validateFormat(path: string): boolean {
     const supportedFormats = ['.jpeg', '.jpg', '.png', '.bmp', '.webp']
     const ext = path.substring(path.lastIndexOf('.')).toLowerCase()
     return supportedFormats.includes(ext)
@@ -395,7 +506,7 @@ export class WallpaperService {
    * Get current wallpaper mode (fixed or variable)
    * @returns Current mode
    */
-  static getCurrentMode(): WallpaperMode {
+  getCurrentMode(): WallpaperMode {
     // In actual implementation, this would read from persistent store
     // For now, return 'fixed' as default
     return 'fixed'
@@ -407,7 +518,7 @@ export class WallpaperService {
    * @param to Target mode
    * @returns Validation result
    */
-  static validateModeTransition(
+  validateModeTransition(
     from: WallpaperMode,
     to: WallpaperMode
   ): { valid: boolean; message?: string } {
@@ -429,7 +540,7 @@ export class WallpaperService {
    * Get all presets (Story 1.5)
    * @returns Array of presets
    */
-  static getPresets(): Preset[] {
+  getPresets(): Preset[] {
     return Array.from(this.presetStore.values())
   }
 
@@ -439,7 +550,7 @@ export class WallpaperService {
    * @param config Rotation configuration
    * @returns Preset with ID or error
    */
-  static savePreset(name: string, config: RotationConfig): { success: boolean; preset?: Preset; error?: string } {
+  savePreset(name: string, config: RotationConfig): { success: boolean; preset?: Preset; error?: string } {
     try {
       if (!name || name.trim() === '') {
         return { success: false, error: 'Preset name cannot be empty' }
@@ -470,7 +581,7 @@ export class WallpaperService {
    * @param presetId Preset ID to delete
    * @returns Success status
    */
-  static deletePreset(presetId: string): { success: boolean; error?: string } {
+  deletePreset(presetId: string): { success: boolean; error?: string } {
     try {
       if (!this.presetStore.has(presetId)) {
         return { success: false, error: 'Preset not found' }
@@ -490,7 +601,7 @@ export class WallpaperService {
    * @param presetId Preset ID to apply
    * @returns Success status with applied config
    */
-  static applyPreset(presetId: string): { success: boolean; config?: RotationConfig; error?: string } {
+  applyPreset(presetId: string): { success: boolean; config?: RotationConfig; error?: string } {
     try {
       const preset = this.presetStore.get(presetId)
       if (!preset) {
@@ -510,7 +621,7 @@ export class WallpaperService {
    * @param presets Array of presets to load
    * @returns Success status
    */
-  static loadPresets(presets: Preset[]): { success: boolean; error?: string } {
+  loadPresets(presets: Preset[]): { success: boolean; error?: string } {
     try {
       this.presetStore.clear()
       presets.forEach((preset) => {
@@ -522,5 +633,77 @@ export class WallpaperService {
       const message = error instanceof Error ? error.message : 'Unknown error'
       return { success: false, error: `Failed to load presets: ${message}` }
     }
+  }
+
+  // Static delegation methods for backward compatibility
+  // Components can call WallpaperService.staticMethod() and it delegates to global instance
+  private static globalInstance: WallpaperService | null = null
+
+  private static getInstance(): WallpaperService {
+    if (!WallpaperService.globalInstance) {
+      WallpaperService.globalInstance = new WallpaperService()
+    }
+    return WallpaperService.globalInstance
+  }
+
+  static getGlobalInstance(): WallpaperService {
+    return WallpaperService.getInstance()
+  }
+
+  // Static delegation methods for backward compatibility and test support
+  static addSchedule(schedule: Schedule) {
+    return WallpaperService.getInstance().addSchedule(schedule)
+  }
+
+  static getSchedules() {
+    return WallpaperService.getInstance().getSchedules()
+  }
+
+  static removeSchedule(scheduleId: string) {
+    return WallpaperService.getInstance().removeSchedule(scheduleId)
+  }
+
+  static updateSchedule(scheduleId: string, updates: Partial<Omit<Schedule, 'id'>>) {
+    return WallpaperService.getInstance().updateSchedule(scheduleId, updates)
+  }
+
+  static startScheduler() {
+    return WallpaperService.getInstance().startScheduler()
+  }
+
+  static stopScheduler() {
+    return WallpaperService.getInstance().stopScheduler()
+  }
+
+  static clearSchedules() {
+    return WallpaperService.getInstance().clearSchedules()
+  }
+
+  static async applyWallpaper(filePath: string, monitorId?: string) {
+    return WallpaperService.getInstance().applyWallpaper(filePath, monitorId)
+  }
+
+  static async getWallpaper() {
+    return WallpaperService.getInstance().getWallpaper()
+  }
+
+  static async getAvailableMonitors() {
+    return WallpaperService.getInstance().getAvailableMonitors()
+  }
+
+  static async scheduleWallpaper(schedule: WallpaperConfig['schedule']) {
+    return WallpaperService.getInstance().scheduleWallpaper(schedule)
+  }
+
+  static startRotation(config: RotationConfig) {
+    return WallpaperService.getInstance().startRotation(config)
+  }
+
+  static stopRotation() {
+    return WallpaperService.getInstance().stopRotation()
+  }
+
+  static getNextRotationImage(mode: RotationMode, imagePool: string[], weights?: Record<string, number>) {
+    return WallpaperService.getInstance().getNextRotationImage(mode, imagePool, weights)
   }
 }

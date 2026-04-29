@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { TaskbarSize } from '../types'
+import { TaskbarSize } from '../types/index'
 
 interface SizeSelectorProps {
   currentSize: TaskbarSize

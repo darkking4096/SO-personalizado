@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
 import path from 'path'
-import { setupIpcHandlers } from './ipc/handlers.js'
-import { ProfileManager } from '@shared/services/profileManager.js'
+import { setupIpcHandlers } from './ipc/handlers'
+import { ProfileManager } from '../../renderer/src/services/profileManager'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built resources dir when using asar.

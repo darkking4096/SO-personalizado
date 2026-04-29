@@ -6,7 +6,7 @@
  * Shortcuts are registered in the main process via IPC
  */
 
-import type { Profile } from '../types'
+import type { Profile } from '../types/index'
 
 export interface ShortcutConfig {
   profileId: string

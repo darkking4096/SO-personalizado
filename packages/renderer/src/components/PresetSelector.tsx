@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { useWallpaperStore } from '../stores/wallpaperStore'
-import { Preset } from '../types'
+import { Preset } from '../types/index'
 import { WallpaperService } from '../services/wallpaperService'
 
 interface PresetSelectorProps {
@@ -25,14 +25,14 @@ export const PresetSelector: React.FC<PresetSelectorProps> = ({
   const { deletePreset } = useWallpaperStore()
 
   const handleSelectPreset = (presetId: string) => {
-    const result = WallpaperService.applyPreset(presetId)
+    const result = WallpaperService.getGlobalInstance().applyPreset(presetId)
     if (result.success) {
       onPresetSelect(presetId)
     }
   }
 
   const handleDeletePreset = (presetId: string) => {
-    const result = WallpaperService.deletePreset(presetId)
+    const result = WallpaperService.getGlobalInstance().deletePreset(presetId)
     if (result.success) {
       deletePreset(presetId)
       onDeletePreset(presetId)

@@ -14,7 +14,7 @@ export const MonitorSelector: React.FC = () => {
   useEffect(() => {
     const loadMonitors = async () => {
       try {
-        const result = await WallpaperService.getAvailableMonitors()
+        const result = await WallpaperService.getGlobalInstance().getAvailableMonitors()
         if (result.success && result.monitors) {
           setAvailableMonitors(result.monitors)
         } else if (result.error) {

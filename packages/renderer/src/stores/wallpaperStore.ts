@@ -1,5 +1,10 @@
+/**
+ * Wallpaper Store
+ * Manages wallpaper scheduling, presets, and UI state
+ */
+
 import { create } from 'zustand'
-import { WallpaperMode, Preset } from '../types'
+import type { Preset, WallpaperMode } from '../types/index'
 
 export interface Monitor {
   id: string
@@ -11,149 +16,104 @@ export interface Monitor {
 
 export interface Schedule {
   id: string
-  time: string // HH:MM format
+  time: string
   imagePath: string
   enabled: boolean
-  createdAt: string
 }
 
 interface WallpaperStoreState {
-  currentWallpaper: { path: string; monitorId?: string } | null
+  // Scheduling
+  schedules: Schedule[]
+  addSchedule: (schedule: Schedule) => void
+  removeSchedule: (id: string) => void
+  updateSchedule: (id: string, updates: Partial<Omit<Schedule, 'id'>>) => void
+  getSchedules: () => Schedule[]
+  clearSchedules: () => void
+
+  // UI State
+  currentWallpaper: { path?: string; schedule?: any } | null
   previewImage: string | null
-  availableMonitors: Monitor[]
-  selectedMonitor: string // 'all' or monitorId
-  mode: WallpaperMode // 'fixed' or 'variable'
+  selectedMonitor: string
+  mode: WallpaperMode
   isApplying: boolean
   error: string | null
-
-  // Schedule management
-  schedules: Schedule[]
-  isSchedulerRunning: boolean
-
-  // Preset management (Story 1.5)
   presets: Preset[]
   activePresetId: string | null
+  availableMonitors: Monitor[]
 
-  // Actions
-  setCurrentWallpaper: (path: string, monitorId?: string) => void
-  setPreviewImage: (imageData: string | null) => void
-  setAvailableMonitors: (monitors: Monitor[]) => void
-  setSelectedMonitor: (monitorId: string) => void
+  // UI Actions
+  setCurrentWallpaper: (wallpaper: { path?: string; schedule?: any } | null) => void
+  setPreviewImage: (image: string | null) => void
+  setSelectedMonitor: (monitor: string) => void
   setMode: (mode: WallpaperMode) => void
   setIsApplying: (applying: boolean) => void
   setError: (error: string | null) => void
-
-  // Schedule actions
-  addSchedule: (schedule: Omit<Schedule, 'id' | 'createdAt'>) => void
-  removeSchedule: (scheduleId: string) => void
-  updateSchedule: (scheduleId: string, updates: Partial<Schedule>) => void
-  getSchedules: () => Schedule[]
-  setIsSchedulerRunning: (running: boolean) => void
-  clearSchedules: () => void
-
-  // Preset actions (Story 1.5)
-  addPreset: (preset: Omit<Preset, 'id' | 'createdAt'>) => void
-  deletePreset: (presetId: string) => void
-  applyPreset: (presetId: string) => void
   setPresets: (presets: Preset[]) => void
-  getPresets: () => Preset[]
-  setActivePresetId: (presetId: string | null) => void
-
-  reset: () => void
+  setActivePresetId: (id: string | null) => void
+  addPreset: (preset: Preset) => void
+  deletePreset: (id: string) => void
+  setAvailableMonitors: (monitors: Monitor[]) => void
 }
 
-const initialState = {
+export const useWallpaperStore = create<WallpaperStoreState>((set, get) => ({
+  // Scheduling state
+  schedules: [],
+
+  addSchedule: (schedule: Schedule) => {
+    set((state) => ({
+      schedules: [...state.schedules, schedule],
+    }))
+  },
+
+  removeSchedule: (id: string) => {
+    set((state) => ({
+      schedules: state.schedules.filter((s) => s.id !== id),
+    }))
+  },
+
+  updateSchedule: (id: string, updates: Partial<Omit<Schedule, 'id'>>) => {
+    set((state) => ({
+      schedules: state.schedules.map((s) =>
+        s.id === id ? { ...s, ...updates } : s
+      ),
+    }))
+  },
+
+  getSchedules: () => get().schedules,
+
+  clearSchedules: () => {
+    set({ schedules: [] })
+  },
+
+  // UI State
   currentWallpaper: null,
   previewImage: null,
-  availableMonitors: [],
   selectedMonitor: 'all',
   mode: 'fixed' as WallpaperMode,
   isApplying: false,
   error: null,
-  schedules: [],
-  isSchedulerRunning: false,
   presets: [],
   activePresetId: null,
-}
+  availableMonitors: [],
 
-export const useWallpaperStore = create<WallpaperStoreState>((set, get) => ({
-  ...initialState,
-
-  setCurrentWallpaper: (path, monitorId) =>
-    set({ currentWallpaper: { path, monitorId }, error: null }),
-
-  setPreviewImage: (imageData) => set({ previewImage: imageData }),
-
-  setAvailableMonitors: (monitors) => set({ availableMonitors: monitors }),
-
-  setSelectedMonitor: (monitorId) => set({ selectedMonitor: monitorId }),
-
+  // UI Actions
+  setCurrentWallpaper: (wallpaper) => set({ currentWallpaper: wallpaper }),
+  setPreviewImage: (image) => set({ previewImage: image }),
+  setSelectedMonitor: (monitor) => set({ selectedMonitor: monitor }),
   setMode: (mode) => set({ mode }),
-
   setIsApplying: (applying) => set({ isApplying: applying }),
-
   setError: (error) => set({ error }),
-
-  addSchedule: (schedule) => {
-    const newSchedule: Schedule = {
-      ...schedule,
-      id: `schedule_${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    }
-    set((state) => ({
-      schedules: [...state.schedules, newSchedule],
-      error: null,
-    }))
-  },
-
-  removeSchedule: (scheduleId) =>
-    set((state) => ({
-      schedules: state.schedules.filter((s) => s.id !== scheduleId),
-    })),
-
-  updateSchedule: (scheduleId, updates) =>
-    set((state) => ({
-      schedules: state.schedules.map((s) =>
-        s.id === scheduleId ? { ...s, ...updates } : s
-      ),
-    })),
-
-  getSchedules: () => get().schedules,
-
-  setIsSchedulerRunning: (running) => set({ isSchedulerRunning: running }),
-
-  clearSchedules: () => set({ schedules: [] }),
-
-  // Preset actions (Story 1.5)
-  addPreset: (preset) => {
-    const newPreset: Preset = {
-      ...preset,
-      id: `preset_${Date.now()}`,
-      createdAt: new Date(),
-    }
-    set(({ presets }) => ({
-      presets: [...presets, newPreset],
-      error: null,
-    }))
-  },
-
-  deletePreset: (presetId) =>
-    set((state) => ({
-      presets: state.presets.filter((p) => p.id !== presetId),
-      activePresetId: state.activePresetId === presetId ? null : state.activePresetId,
-    })),
-
-  applyPreset: (presetId) => {
-    set({
-      activePresetId: presetId,
-    })
-  },
-
   setPresets: (presets) => set({ presets }),
-
-  getPresets: () => get().presets,
-
-  setActivePresetId: (presetId) => set({ activePresetId: presetId }),
-
-  reset: () => set(initialState),
+  setActivePresetId: (id) => set({ activePresetId: id }),
+  addPreset: (preset) => {
+    set((state) => ({
+      presets: [...state.presets, preset],
+    }))
+  },
+  deletePreset: (id) => {
+    set((state) => ({
+      presets: state.presets.filter((p) => p.id !== id),
+    }))
+  },
+  setAvailableMonitors: (monitors) => set({ availableMonitors: monitors }),
 }))
