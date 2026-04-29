@@ -21,6 +21,7 @@ interface AppStoreActions {
 
   // Profile actions
   addProfile: (profile: Profile) => void
+  updateProfile: (id: string, updates: Partial<Profile>) => void
   removeProfile: (id: string) => void
   setProfiles: (profiles: Profile[]) => void
   selectProfile: (id: string) => void
@@ -125,6 +126,12 @@ export const useAppStore = create<AppState & AppStoreActions>((set) => ({
   addProfile: (profile) =>
     set((state) => ({
       profiles: [...state.profiles, profile],
+    })),
+  updateProfile: (id, updates) =>
+    set((state) => ({
+      profiles: state.profiles.map((p) =>
+        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+      ),
     })),
   removeProfile: (id) =>
     set((state) => ({
