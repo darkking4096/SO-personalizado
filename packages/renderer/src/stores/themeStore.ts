@@ -7,7 +7,6 @@ interface ThemeStoreState {
   windowsTheme: ThemeMode
   syncWithSystem: boolean
   accentColor: string
-  previewColor: string | null // Live preview before applying
   isApplying: boolean
   error: string | null
 
@@ -16,7 +15,6 @@ interface ThemeStoreState {
   setWindowsTheme: (theme: ThemeMode) => void
   setSyncWithSystem: (sync: boolean) => void
   setAccentColor: (color: string) => void
-  setPreviewColor: (color: string | null) => void
   setIsApplying: (applying: boolean) => void
   setError: (error: string | null) => void
 }
@@ -26,7 +24,6 @@ export const useThemeStore = create<ThemeStoreState>((set) => ({
   windowsTheme: 'light',
   syncWithSystem: false,
   accentColor: '#0078D4',
-  previewColor: null,
   isApplying: false,
   error: null,
 
@@ -34,7 +31,6 @@ export const useThemeStore = create<ThemeStoreState>((set) => ({
   setWindowsTheme: (theme) => set({ windowsTheme: theme }),
   setSyncWithSystem: (sync) => set({ syncWithSystem: sync }),
   setAccentColor: (color) => set({ accentColor: color }),
-  setPreviewColor: (color) => set({ previewColor: color }),
   setIsApplying: (applying) => set({ isApplying: applying }),
   setError: (error) => set({ error }),
 }))

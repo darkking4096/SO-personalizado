@@ -1,138 +1,202 @@
-import { useState } from 'react'
-import { useAppStore } from '../stores/appStore'
-import ProfileList from './ProfileList'
-import CreateProfileDialog from './CreateProfileDialog'
-import EditProfileDialog from './EditProfileDialog'
-import type { Profile } from '@shared/types/index.js'
+/**
+ * Profile Manager Component
+ * Story 3.4: Manage profiles, set default, and view auto-apply status
+ * Allows users to select a profile as default for auto-apply on startup
+ */
 
-export default function ProfileManager() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [editingProfile, setEditingProfile] = useState<Profile | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
+import React, { useState, useEffect, useCallback } from 'react'
+import { useProfileStore } from '../stores/profileStore'
+import { ProfileManager as ProfileService } from '../services/profileManager'
+import type { Profile } from '../types'
 
-  const profiles = useAppStore((state) => state.profiles)
-  const addProfile = useAppStore((state) => state.addProfile)
-  const removeProfile = useAppStore((state) => state.removeProfile)
+export const ProfileManager: React.FC = () => {
+  const [defaultProfileId, setDefaultProfileId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  // Filter profiles by name
-  const filteredProfiles = profiles.filter((profile) =>
-    profile.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const {
+    profiles,
+    setDefaultProfileId: storeSetDefaultProfileId,
+    currentProfile,
+  } = useProfileStore()
+
+  // Load default profile on mount
+  useEffect(() => {
+    const loadDefaultProfile = async () => {
+      try {
+        const defaultId = await ProfileService.getDefaultProfile()
+        setDefaultProfileId(defaultId)
+      } catch (err) {
+        console.error('Failed to load default profile:', err)
+        setError('Failed to load default profile settings')
+      }
+    }
+
+    loadDefaultProfile()
+  }, [])
+
+  /**
+   * Set a profile as default
+   */
+  const handleSetAsDefault = useCallback(
+    async (profileId: string) => {
+      try {
+        setLoading(true)
+        setError(null)
+        setSuccessMessage(null)
+
+        await ProfileService.setAsDefault(profileId)
+        setDefaultProfileId(profileId)
+        storeSetDefaultProfileId(profileId)
+
+        setSuccessMessage('Default profile set successfully')
+        setTimeout(() => setSuccessMessage(null), 3000)
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Failed to set default profile'
+        setError(errorMsg)
+        console.error('Failed to set default profile:', err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [storeSetDefaultProfileId]
   )
 
-  // Calculate total storage size (rough estimate: ~2KB per profile)
-  const totalStorageSize = (profiles.length * 2).toFixed(1)
+  /**
+   * Clear default profile
+   */
+  const handleClearDefault = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      setSuccessMessage(null)
 
-  const handleCreateProfile = (newProfile: Profile) => {
-    addProfile(newProfile)
-    setIsCreateDialogOpen(false)
-  }
+      await ProfileService.setAsDefault('')
+      setDefaultProfileId(null)
+      storeSetDefaultProfileId(null)
 
-  const handleEditProfile = (profile: Profile) => {
-    setEditingProfile(profile)
-  }
-
-  const handleDeleteProfile = (id: string) => {
-    const profileName = profiles.find((p) => p.id === id)?.name || 'Profile'
-    if (window.confirm(`Are you sure you want to delete "${profileName}"?`)) {
-      removeProfile(id)
+      setSuccessMessage('Default profile cleared')
+      setTimeout(() => setSuccessMessage(null), 3000)
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to clear default profile'
+      setError(errorMsg)
+      console.error('Failed to clear default profile:', err)
+    } finally {
+      setLoading(false)
     }
-  }
+  }, [storeSetDefaultProfileId])
 
   return (
-    <main className="h-full overflow-auto bg-white dark:bg-slate-950">
-      <div className="p-8 max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-950 dark:text-white mb-2">
-            Profiles
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400">
-            Save and manage your customization profiles. Switch between them instantly to apply different settings.
+    <div className="space-y-6">
+      {/* Section Title */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Profile Management</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Set a default profile to automatically apply on app startup
+        </p>
+      </div>
+
+      {/* Status Messages */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-800 dark:text-red-200 text-sm">
+          {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-800 dark:text-green-200 text-sm">
+          {successMessage}
+        </div>
+      )}
+
+      {/* Default Profile Setting */}
+      <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 space-y-3">
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            Default Profile (Auto-Apply on Startup)
+          </label>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+            Hold <kbd className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-xs">Shift</kbd> during app
+            launch to skip auto-apply
           </p>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            <p className="text-sm text-slate-600 dark:text-slate-400">Total Profiles</p>
-            <p className="text-2xl font-bold text-slate-950 dark:text-white">{profiles.length}</p>
-          </div>
-          <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            <p className="text-sm text-slate-600 dark:text-slate-400">Storage Size</p>
-            <p className="text-2xl font-bold text-slate-950 dark:text-white">{totalStorageSize} KB</p>
-          </div>
-        </div>
-
-        {/* Search and Create Button */}
-        <div className="flex gap-4 mb-8">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search profiles by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-950 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
-          >
-            <span>+</span>
-            Create Profile
-          </button>
-        </div>
-
-        {/* Profile List */}
-        <ProfileList
-          profiles={filteredProfiles}
-          onEdit={handleEditProfile}
-          onDelete={handleDeleteProfile}
-        />
-
-        {/* Empty State */}
-        {profiles.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">💾</div>
-            <h3 className="text-lg font-semibold text-slate-950 dark:text-white mb-2">
-              No profiles yet
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Create your first profile to save your customization settings
-            </p>
-            <button
-              onClick={() => setIsCreateDialogOpen(true)}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
-            >
-              Create Profile
-            </button>
-          </div>
-        )}
-
-        {/* No results state */}
-        {profiles.length > 0 && filteredProfiles.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-slate-600 dark:text-slate-400">
-              No profiles match your search query
+        {profiles.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-sm text-gray-600 dark:text-gray-400">No profiles available</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              Create a profile first to set it as default
             </p>
           </div>
-        )}
+        ) : (
+          <div className="space-y-2">
+            {profiles.map((profile: Profile) => (
+              <div
+                key={profile.id}
+                className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  {/* Radio Button */}
+                  <input
+                    type="radio"
+                    id={`default-${profile.id}`}
+                    name="default-profile"
+                    checked={defaultProfileId === profile.id}
+                    onChange={() => handleSetAsDefault(profile.id)}
+                    disabled={loading}
+                    className="w-4 h-4 cursor-pointer"
+                  />
 
-        {/* Dialogs */}
-        {isCreateDialogOpen && (
-          <CreateProfileDialog
-            onCreate={handleCreateProfile}
-            onCancel={() => setIsCreateDialogOpen(false)}
-          />
-        )}
+                  {/* Profile Info */}
+                  <label htmlFor={`default-${profile.id}`} className="flex-1 cursor-pointer">
+                    <p className="font-medium text-gray-900 dark:text-white">{profile.name}</p>
+                    {profile.description && (
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{profile.description}</p>
+                    )}
+                  </label>
+                </div>
 
-        {editingProfile && (
-          <EditProfileDialog
-            profile={editingProfile}
-            onClose={() => setEditingProfile(null)}
-          />
+                {/* Status Badge */}
+                {defaultProfileId === profile.id && (
+                  <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-medium">
+                    Default
+                  </div>
+                )}
+
+                {/* Current Profile Indicator */}
+                {currentProfile?.id === profile.id && defaultProfileId !== profile.id && (
+                  <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 px-2 py-1 rounded text-xs font-medium">
+                    Current
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Clear Default Button */}
+            {defaultProfileId && (
+              <button
+                onClick={handleClearDefault}
+                disabled={loading}
+                className="w-full mt-3 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Processing...' : 'Clear Default Profile'}
+              </button>
+            )}
+          </div>
         )}
       </div>
-    </main>
+
+      {/* Info Box */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-2">ℹ️ How Default Profiles Work</h3>
+        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
+          <li>When a default is set, it auto-applies when you launch the app</li>
+          <li>Hold Shift during startup to skip automatic application</li>
+          <li>Settings apply in order: Wallpaper → Taskbar → Theme → Shortcuts</li>
+          <li>If apply fails, an error message will appear</li>
+        </ul>
+      </div>
+    </div>
   )
 }
