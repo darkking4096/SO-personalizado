@@ -652,4 +652,110 @@ export class RegistryManager {
       return false
     }
   }
+
+  /**
+   * Get icon size for taskbar items (16-64px)
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Icon size in pixels
+   */
+  static async getIconSize(): Promise<number> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarIconSize'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] TaskbarIconSize not found, defaulting to 48')
+        return 48
+      }
+
+      const iconSize = parseInt(String(value), 10)
+      return Math.min(64, Math.max(16, iconSize))
+    } catch (error) {
+      console.error('[RegistryManager] Error reading icon size:', error)
+      return 48
+    }
+  }
+
+  /**
+   * Set icon size for taskbar items (16-64px)
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param sizePixels Icon size in pixels (16-64)
+   * @returns Success status
+   */
+  static async setIconSize(sizePixels: number): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarIconSize'
+
+      const validSize = Math.min(64, Math.max(16, sizePixels))
+
+      const success = await this.write(hive, path, key, validSize, 'dword')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting icon size:', error)
+      return false
+    }
+  }
+
+  /**
+   * Get icon spacing in taskbar (0-20px)
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Icon spacing in pixels
+   */
+  static async getIconSpacing(): Promise<number> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarIconSpacing'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] TaskbarIconSpacing not found, defaulting to 4')
+        return 4
+      }
+
+      const spacing = parseInt(String(value), 10)
+      return Math.min(20, Math.max(0, spacing))
+    } catch (error) {
+      console.error('[RegistryManager] Error reading icon spacing:', error)
+      return 4
+    }
+  }
+
+  /**
+   * Set icon spacing in taskbar (0-20px)
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param spacingPixels Icon spacing in pixels (0-20)
+   * @returns Success status
+   */
+  static async setIconSpacing(spacingPixels: number): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarIconSpacing'
+
+      const validSpacing = Math.min(20, Math.max(0, spacingPixels))
+
+      const success = await this.write(hive, path, key, validSpacing, 'dword')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting icon spacing:', error)
+      return false
+    }
+  }
 }

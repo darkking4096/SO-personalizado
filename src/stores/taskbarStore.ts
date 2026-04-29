@@ -5,6 +5,8 @@ interface TaskbarStoreState extends TaskbarState {
   isApplying: boolean
   error: string | null
   previewBackgroundColor: string
+  iconSize: number
+  iconSpacing: number
 
   // Actions
   setPosition: (position: TaskbarState['position']) => void
@@ -18,6 +20,8 @@ interface TaskbarStoreState extends TaskbarState {
   setError: (error: string | null) => void
   setVisibleItems: (items: Record<string, boolean>) => void
   setItemVisibility: (itemName: string, visible: boolean) => void
+  setIconSize: (size: number) => void
+  setIconSpacing: (spacing: number) => void
   reset: () => void
 }
 
@@ -38,6 +42,8 @@ const initialState = {
     weather: false,
     calendar: false,
   },
+  iconSize: 48,
+  iconSpacing: 4,
   isApplying: false,
   error: null,
   previewBackgroundColor: '#000000',
@@ -65,6 +71,8 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
         [itemName]: visible,
       },
     })),
+  setIconSize: (iconSize) => set({ iconSize }),
+  setIconSpacing: (iconSpacing) => set({ iconSpacing }),
   reset: () =>
     set({
       position: 'bottom',
@@ -83,6 +91,8 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
         weather: false,
         calendar: false,
       },
+      iconSize: 48,
+      iconSpacing: 4,
       isApplying: false,
       error: null,
       previewBackgroundColor: '#000000',

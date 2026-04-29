@@ -6,6 +6,7 @@ import { ColorPicker } from './ColorPicker'
 import { SizeSelector } from './SizeSelector'
 import { AutoHideToggle } from './AutoHideToggle'
 import { VisibilityChecklist } from './VisibilityChecklist'
+import { IconCustomizationPanel } from './IconCustomizationPanel'
 
 export const TaskbarPanel: React.FC = () => {
   const {
@@ -17,6 +18,8 @@ export const TaskbarPanel: React.FC = () => {
     visibility,
     autoHide,
     visibleItems,
+    iconSize,
+    iconSpacing,
     isApplying,
     error,
     setPosition,
@@ -27,6 +30,8 @@ export const TaskbarPanel: React.FC = () => {
     setVisibility,
     setAutoHide,
     setItemVisibility,
+    setIconSize,
+    setIconSpacing,
     setIsApplying,
     setError,
   } = useTaskbarStore()
@@ -207,6 +212,38 @@ export const TaskbarPanel: React.FC = () => {
     [setItemVisibility, setIsApplying, setError]
   )
 
+  /**
+   * Handle icon size change
+   */
+  const handleIconSizeChange = useCallback(
+    (newSize: number) => {
+      try {
+        setError(null)
+        setIconSize(newSize)
+        console.log('[TaskbarPanel] Applied icon size:', newSize)
+      } catch (err) {
+        setError('Failed to apply icon size setting')
+      }
+    },
+    [setIconSize, setError]
+  )
+
+  /**
+   * Handle icon spacing change
+   */
+  const handleIconSpacingChange = useCallback(
+    (newSpacing: number) => {
+      try {
+        setError(null)
+        setIconSpacing(newSpacing)
+        console.log('[TaskbarPanel] Applied icon spacing:', newSpacing)
+      } catch (err) {
+        setError('Failed to apply icon spacing setting')
+      }
+    },
+    [setIconSpacing, setError]
+  )
+
   return (
     <div className="w-full max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Taskbar Settings</h2>
@@ -234,6 +271,20 @@ export const TaskbarPanel: React.FC = () => {
           onSizeChange={handleSizeChange}
           disabled={isApplying}
         />
+      </div>
+
+      {/* Icon Customization Section */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+        <IconCustomizationPanel
+          iconSize={iconSize}
+          iconSpacing={iconSpacing}
+          onIconSizeChange={handleIconSizeChange}
+          onIconSpacingChange={handleIconSpacingChange}
+          disabled={isApplying}
+        />
+        <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+          Customize the size and spacing of taskbar icons. Changes apply instantly and persist across system restarts.
+        </p>
       </div>
 
       {/* Transparency Slider Section */}
