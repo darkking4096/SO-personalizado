@@ -1,0 +1,1031 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-04-29",
+  "totalShortcuts": 128,
+  "shortcuts": [
+    {
+      "id": "win-d",
+      "keys": "Win + D",
+      "function": "Show/hide desktop",
+      "category": "windows",
+      "description": "Minimizes all windows and shows desktop. Press again to restore.",
+      "winVersion": "Windows 11 21H2+"
+    },
+    {
+      "id": "win-e",
+      "keys": "Win + E",
+      "function": "Open File Explorer",
+      "category": "windows",
+      "description": "Opens File Explorer to view files and folders.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-x",
+      "keys": "Win + X",
+      "function": "Open Power User menu",
+      "category": "windows",
+      "description": "Quick access to system tools, Device Manager, Disk Management, etc.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-v",
+      "keys": "Win + V",
+      "function": "Open Clipboard history",
+      "category": "windows",
+      "description": "View previously copied items (requires clipboard history enabled).",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-shift-v",
+      "keys": "Win + Shift + V",
+      "function": "Cycle through notifications",
+      "category": "windows",
+      "description": "Navigate through system notifications in reverse order.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-i",
+      "keys": "Win + I",
+      "function": "Open Settings",
+      "category": "windows",
+      "description": "Launches Windows Settings application.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-k",
+      "keys": "Win + K",
+      "function": "Open Connect (wireless display)",
+      "category": "windows",
+      "description": "Connect to wireless displays or audio devices.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-period",
+      "keys": "Win + .",
+      "function": "Open Emoji/GIF panel",
+      "category": "windows",
+      "description": "Insert emoji, GIF, or kaomoji into any app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-comma",
+      "keys": "Win + ,",
+      "function": "Peek at desktop",
+      "category": "windows",
+      "description": "Temporarily show desktop while holding key.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-m",
+      "keys": "Win + M",
+      "function": "Minimize all windows",
+      "category": "windows",
+      "description": "Minimize all open windows.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-shift-m",
+      "keys": "Win + Shift + M",
+      "function": "Restore minimized windows",
+      "category": "windows",
+      "description": "Restore windows minimized by Win+M.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-arrow-left",
+      "keys": "Win + Left Arrow",
+      "function": "Snap window to left half",
+      "category": "windows",
+      "description": "Resize active window to left 50% of screen.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-arrow-right",
+      "keys": "Win + Right Arrow",
+      "function": "Snap window to right half",
+      "category": "windows",
+      "description": "Resize active window to right 50% of screen.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-arrow-up",
+      "keys": "Win + Up Arrow",
+      "function": "Maximize window",
+      "category": "windows",
+      "description": "Maximize the active window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-arrow-down",
+      "keys": "Win + Down Arrow",
+      "function": "Minimize/restore window",
+      "category": "windows",
+      "description": "Minimize window or restore if already minimized.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-h",
+      "keys": "Win + H",
+      "function": "Open voice typing",
+      "category": "windows",
+      "description": "Dictate text using voice recognition.",
+      "winVersion": "Windows 11 21H2+"
+    },
+    {
+      "id": "win-c",
+      "keys": "Win + C",
+      "function": "Open Copilot",
+      "category": "windows",
+      "description": "Launch Windows Copilot AI assistant.",
+      "winVersion": "Windows 11 23H2+"
+    },
+    {
+      "id": "win-n",
+      "keys": "Win + N",
+      "function": "Open Quick Note",
+      "category": "windows",
+      "description": "Create a quick note with Sticky Notes.",
+      "winVersion": "Windows 11 23H2+"
+    },
+    {
+      "id": "win-p",
+      "keys": "Win + P",
+      "function": "Project display options",
+      "category": "windows",
+      "description": "External display/projector connection menu.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-a",
+      "keys": "Win + A",
+      "function": "Open Action Center",
+      "category": "windows",
+      "description": "View notifications and quick actions.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-s",
+      "keys": "Win + S",
+      "function": "Open Search",
+      "category": "windows",
+      "description": "Launch Windows Search.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-shift-s",
+      "keys": "Win + Shift + S",
+      "function": "Screenshot (Snipping Tool)",
+      "category": "windows",
+      "description": "Take a partial or full screenshot.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-r",
+      "keys": "Win + R",
+      "function": "Open Run dialog",
+      "category": "windows",
+      "description": "Execute commands or open programs.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-t",
+      "keys": "Win + T",
+      "function": "Focus on taskbar",
+      "category": "windows",
+      "description": "Cycle through taskbar items.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-tab",
+      "keys": "Win + Tab",
+      "function": "Open Task View",
+      "category": "windows",
+      "description": "See all open windows and virtual desktops.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-ctrl-d",
+      "keys": "Win + Ctrl + D",
+      "function": "Create virtual desktop",
+      "category": "windows",
+      "description": "Add a new virtual desktop.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-ctrl-f4",
+      "keys": "Win + Ctrl + F4",
+      "function": "Close virtual desktop",
+      "category": "windows",
+      "description": "Close the current virtual desktop.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-ctrl-arrow-left",
+      "keys": "Win + Ctrl + Left Arrow",
+      "function": "Switch to previous virtual desktop",
+      "category": "windows",
+      "description": "Move to the virtual desktop on the left.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-ctrl-arrow-right",
+      "keys": "Win + Ctrl + Right Arrow",
+      "function": "Switch to next virtual desktop",
+      "category": "windows",
+      "description": "Move to the virtual desktop on the right.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-u",
+      "keys": "Win + U",
+      "function": "Open Ease of Access Center",
+      "category": "windows",
+      "description": "Access accessibility settings and tools.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-shift-n",
+      "keys": "Win + Shift + N",
+      "function": "Open new File Explorer window",
+      "category": "windows",
+      "description": "Open a fresh File Explorer window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-g",
+      "keys": "Win + G",
+      "function": "Open Xbox Game Bar",
+      "category": "windows",
+      "description": "Access gaming overlay and recording tools.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-b",
+      "keys": "Win + B",
+      "function": "Focus system tray",
+      "category": "windows",
+      "description": "Move focus to system notification area.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-l",
+      "keys": "Win + L",
+      "function": "Lock device",
+      "category": "windows",
+      "description": "Lock your computer.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-plus",
+      "keys": "Win + Plus",
+      "function": "Magnifier zoom in",
+      "category": "windows",
+      "description": "Increase screen magnification level.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-minus",
+      "keys": "Win + Minus",
+      "function": "Magnifier zoom out",
+      "category": "windows",
+      "description": "Decrease screen magnification level.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-tab",
+      "keys": "Alt + Tab",
+      "function": "Switch between open apps",
+      "category": "alt",
+      "description": "Cycle through running applications.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-f4",
+      "keys": "Alt + F4",
+      "function": "Close active window",
+      "category": "alt",
+      "description": "Close the currently active window or app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-f",
+      "keys": "Alt + F",
+      "function": "Open File menu",
+      "category": "alt",
+      "description": "Access File menu in most applications.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-e",
+      "keys": "Alt + E",
+      "function": "Open Edit menu",
+      "category": "alt",
+      "description": "Access Edit menu in most applications.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-print",
+      "keys": "Alt + Print Screen",
+      "function": "Screenshot active window",
+      "category": "alt",
+      "description": "Capture the currently active window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-escape",
+      "keys": "Alt + Esc",
+      "function": "Switch to previous window",
+      "category": "alt",
+      "description": "Cycle backward through open windows.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-spacebar",
+      "keys": "Alt + Spacebar",
+      "function": "Open window menu",
+      "category": "alt",
+      "description": "Access window control menu (minimize, maximize, close).",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-enter",
+      "keys": "Alt + Enter",
+      "function": "Toggle fullscreen",
+      "category": "alt",
+      "description": "Switch between windowed and fullscreen mode.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-prtsc",
+      "keys": "Alt + PrtScn",
+      "function": "Copy window screenshot",
+      "category": "alt",
+      "description": "Copy screenshot of active window to clipboard.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-shift-tab",
+      "keys": "Alt + Shift + Tab",
+      "function": "Switch apps in reverse",
+      "category": "alt",
+      "description": "Cycle backward through running applications.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-a",
+      "keys": "Ctrl + A",
+      "function": "Select all",
+      "category": "ctrl",
+      "description": "Select all items or text in active window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-c",
+      "keys": "Ctrl + C",
+      "function": "Copy",
+      "category": "ctrl",
+      "description": "Copy selected item to clipboard.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-x",
+      "keys": "Ctrl + X",
+      "function": "Cut",
+      "category": "ctrl",
+      "description": "Cut selected item to clipboard.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-v",
+      "keys": "Ctrl + V",
+      "function": "Paste",
+      "category": "ctrl",
+      "description": "Paste item from clipboard.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-z",
+      "keys": "Ctrl + Z",
+      "function": "Undo",
+      "category": "ctrl",
+      "description": "Undo the last action.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-y",
+      "keys": "Ctrl + Y",
+      "function": "Redo",
+      "category": "ctrl",
+      "description": "Redo the last undone action.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-n",
+      "keys": "Ctrl + N",
+      "function": "New window/document",
+      "category": "ctrl",
+      "description": "Open a new window in the current app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-o",
+      "keys": "Ctrl + O",
+      "function": "Open file",
+      "category": "ctrl",
+      "description": "Open a file dialog.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-s",
+      "keys": "Ctrl + S",
+      "function": "Save",
+      "category": "ctrl",
+      "description": "Save the current document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-p",
+      "keys": "Ctrl + P",
+      "function": "Print",
+      "category": "ctrl",
+      "description": "Open print dialog.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-f",
+      "keys": "Ctrl + F",
+      "function": "Find",
+      "category": "ctrl",
+      "description": "Open find dialog in application or browser.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-h",
+      "keys": "Ctrl + H",
+      "function": "Open History",
+      "category": "ctrl",
+      "description": "View browsing or file history.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-w",
+      "keys": "Ctrl + W",
+      "function": "Close tab",
+      "category": "ctrl",
+      "description": "Close current tab in browser or application.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-t",
+      "keys": "Ctrl + T",
+      "function": "Open new tab",
+      "category": "ctrl",
+      "description": "Open a new browser tab or application tab.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-tab",
+      "keys": "Ctrl + Tab",
+      "function": "Switch to next tab",
+      "category": "ctrl",
+      "description": "Move to the next open tab.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-tab",
+      "keys": "Ctrl + Shift + Tab",
+      "function": "Switch to previous tab",
+      "category": "ctrl",
+      "description": "Move to the previous open tab.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-l",
+      "keys": "Ctrl + L",
+      "function": "Focus address bar",
+      "category": "ctrl",
+      "description": "Select and focus browser address bar.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-b",
+      "keys": "Ctrl + B",
+      "function": "Toggle bold",
+      "category": "ctrl",
+      "description": "Make text bold in text editors.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-i",
+      "keys": "Ctrl + I",
+      "function": "Toggle italic",
+      "category": "ctrl",
+      "description": "Make text italic in text editors.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-u",
+      "keys": "Ctrl + U",
+      "function": "Toggle underline",
+      "category": "ctrl",
+      "description": "Underline text in text editors.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-d",
+      "keys": "Ctrl + D",
+      "function": "Bookmark page",
+      "category": "ctrl",
+      "description": "Add current page to bookmarks.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-g",
+      "keys": "Ctrl + G",
+      "function": "Find next",
+      "category": "ctrl",
+      "description": "Go to next search result.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-delete",
+      "keys": "Ctrl + Shift + Delete",
+      "function": "Open Task Manager",
+      "category": "ctrl-shift",
+      "description": "Launch Windows Task Manager.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-alt-delete",
+      "keys": "Ctrl + Alt + Delete",
+      "function": "Security options menu",
+      "category": "ctrl-shift",
+      "description": "Access lock, sign out, change password, Task Manager.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-esc",
+      "keys": "Ctrl + Shift + Esc",
+      "function": "Open Task Manager (direct)",
+      "category": "ctrl-shift",
+      "description": "Launch Task Manager directly without login screen.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-alt-t",
+      "keys": "Ctrl + Alt + T",
+      "function": "Open Terminal",
+      "category": "ctrl-shift",
+      "description": "Open Windows Terminal or PowerShell.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-alt-shift-esc",
+      "keys": "Ctrl + Alt + Shift + Esc",
+      "function": "Open performance options",
+      "category": "ctrl-shift",
+      "description": "Access system performance monitor.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-n",
+      "keys": "Ctrl + Shift + N",
+      "function": "New private window",
+      "category": "ctrl-shift",
+      "description": "Open incognito/private browsing window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-m",
+      "keys": "Ctrl + Shift + M",
+      "function": "Switch user profile",
+      "category": "ctrl-shift",
+      "description": "Switch to different browser profile.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f1",
+      "keys": "F1",
+      "function": "Open help",
+      "category": "function",
+      "description": "Show help for active application.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f2",
+      "keys": "F2",
+      "function": "Rename",
+      "category": "function",
+      "description": "Rename selected file or folder.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f3",
+      "keys": "F3",
+      "function": "Find in File Explorer",
+      "category": "function",
+      "description": "Open search box in File Explorer.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f4",
+      "keys": "F4",
+      "function": "Repeat last action",
+      "category": "function",
+      "description": "Repeat the previous action in some apps.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f5",
+      "keys": "F5",
+      "function": "Refresh",
+      "category": "function",
+      "description": "Refresh current window or webpage.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f6",
+      "keys": "F6",
+      "function": "Cycle focus",
+      "category": "function",
+      "description": "Move focus through screen elements.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f7",
+      "keys": "F7",
+      "function": "Caret browsing",
+      "category": "function",
+      "description": "Enable text selection in browser.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f10",
+      "keys": "F10",
+      "function": "Activate menu bar",
+      "category": "function",
+      "description": "Access menu bar in applications.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f11",
+      "keys": "F11",
+      "function": "Full screen",
+      "category": "function",
+      "description": "Toggle fullscreen mode (web browsers).",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "f12",
+      "keys": "F12",
+      "function": "Open Developer Tools",
+      "category": "function",
+      "description": "Launch browser developer console.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "printscreen",
+      "keys": "Print Screen",
+      "function": "Capture full screen",
+      "category": "function",
+      "description": "Copy entire screen to clipboard.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "scrolllock",
+      "keys": "Scroll Lock",
+      "function": "Toggle scroll lock",
+      "category": "function",
+      "description": "Prevent scrolling in spreadsheets.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "pause",
+      "keys": "Pause/Break",
+      "function": "Pause operation",
+      "category": "function",
+      "description": "Pause current operation.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "insert",
+      "keys": "Insert",
+      "function": "Toggle insert mode",
+      "category": "function",
+      "description": "Toggle between insert and overwrite modes.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "delete",
+      "keys": "Delete",
+      "function": "Delete",
+      "category": "function",
+      "description": "Delete selected item or character after cursor.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "backspace",
+      "keys": "Backspace",
+      "function": "Backspace",
+      "category": "function",
+      "description": "Delete character before cursor.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "home",
+      "keys": "Home",
+      "function": "Go to beginning",
+      "category": "function",
+      "description": "Move cursor to beginning of line/document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "end",
+      "keys": "End",
+      "function": "Go to end",
+      "category": "function",
+      "description": "Move cursor to end of line/document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "pageup",
+      "keys": "Page Up",
+      "function": "Page up",
+      "category": "function",
+      "description": "Move up one page in document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "pagedown",
+      "keys": "Page Down",
+      "function": "Page down",
+      "category": "function",
+      "description": "Move down one page in document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-1",
+      "keys": "Win + 1",
+      "function": "Launch/switch taskbar item 1",
+      "category": "number",
+      "description": "Open or activate first pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-2",
+      "keys": "Win + 2",
+      "function": "Launch/switch taskbar item 2",
+      "category": "number",
+      "description": "Open or activate second pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-3",
+      "keys": "Win + 3",
+      "function": "Launch/switch taskbar item 3",
+      "category": "number",
+      "description": "Open or activate third pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-4",
+      "keys": "Win + 4",
+      "function": "Launch/switch taskbar item 4",
+      "category": "number",
+      "description": "Open or activate fourth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-5",
+      "keys": "Win + 5",
+      "function": "Launch/switch taskbar item 5",
+      "category": "number",
+      "description": "Open or activate fifth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-6",
+      "keys": "Win + 6",
+      "function": "Launch/switch taskbar item 6",
+      "category": "number",
+      "description": "Open or activate sixth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-7",
+      "keys": "Win + 7",
+      "function": "Launch/switch taskbar item 7",
+      "category": "number",
+      "description": "Open or activate seventh pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-8",
+      "keys": "Win + 8",
+      "function": "Launch/switch taskbar item 8",
+      "category": "number",
+      "description": "Open or activate eighth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-9",
+      "keys": "Win + 9",
+      "function": "Launch/switch taskbar item 9",
+      "category": "number",
+      "description": "Open or activate ninth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "win-0",
+      "keys": "Win + 0",
+      "function": "Launch/switch taskbar item 10",
+      "category": "number",
+      "description": "Open or activate tenth pinned taskbar app.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-m",
+      "keys": "Ctrl + M",
+      "function": "Minimize window",
+      "category": "ctrl",
+      "description": "Minimize the active window to taskbar.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-q",
+      "keys": "Ctrl + Q",
+      "function": "Quit application",
+      "category": "ctrl",
+      "description": "Close the entire application.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-r",
+      "keys": "Ctrl + R",
+      "function": "Hard refresh",
+      "category": "ctrl",
+      "description": "Refresh page with fresh cache.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-e",
+      "keys": "Ctrl + E",
+      "function": "Center text",
+      "category": "ctrl",
+      "description": "Center align text in document.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-j",
+      "keys": "Ctrl + J",
+      "function": "Show downloads",
+      "category": "ctrl",
+      "description": "View browser downloads panel.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-k",
+      "keys": "Ctrl + K",
+      "function": "Insert link",
+      "category": "ctrl",
+      "description": "Open link insertion dialog.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-ins",
+      "keys": "Ctrl + Insert",
+      "function": "Copy (alternate)",
+      "category": "ctrl",
+      "description": "Alternative copy shortcut.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "shift-ins",
+      "keys": "Shift + Insert",
+      "function": "Paste (alternate)",
+      "category": "ctrl",
+      "description": "Alternative paste shortcut.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "shift-del",
+      "keys": "Shift + Delete",
+      "function": "Permanent delete",
+      "category": "ctrl",
+      "description": "Permanently delete file instead of to recycle bin.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "shift-f10",
+      "keys": "Shift + F10",
+      "function": "Open context menu",
+      "category": "ctrl",
+      "description": "Show right-click context menu.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "shift-enter",
+      "keys": "Shift + Enter",
+      "function": "Reverse search",
+      "category": "ctrl",
+      "description": "Search backward for previous match.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-left",
+      "keys": "Alt + Left Arrow",
+      "function": "Go back",
+      "category": "alt",
+      "description": "Go back to previous page/folder.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-right",
+      "keys": "Alt + Right Arrow",
+      "function": "Go forward",
+      "category": "alt",
+      "description": "Go forward to next page/folder.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-up",
+      "keys": "Alt + Up Arrow",
+      "function": "Go to parent folder",
+      "category": "alt",
+      "description": "Navigate to parent directory.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-d",
+      "keys": "Alt + D",
+      "function": "Open address bar",
+      "category": "alt",
+      "description": "Focus on address bar in browser.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "alt-h",
+      "keys": "Alt + H",
+      "function": "Open Home menu",
+      "category": "alt",
+      "description": "Navigate to home in application.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-b",
+      "keys": "Ctrl + Shift + B",
+      "function": "Restore hidden tabs",
+      "category": "ctrl-shift",
+      "description": "Restore last closed browser tab.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-w",
+      "keys": "Ctrl + Shift + W",
+      "function": "Close window",
+      "category": "ctrl-shift",
+      "description": "Close entire browser/app window.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-s",
+      "keys": "Ctrl + Shift + S",
+      "function": "Save as",
+      "category": "ctrl-shift",
+      "description": "Save with new filename or location.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-p",
+      "keys": "Ctrl + Shift + P",
+      "function": "Open command palette",
+      "category": "ctrl-shift",
+      "description": "Access application command palette.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-i",
+      "keys": "Ctrl + Shift + I",
+      "function": "Inspect element",
+      "category": "ctrl-shift",
+      "description": "Open inspector for web element.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-j",
+      "keys": "Ctrl + Shift + J",
+      "function": "Open console",
+      "category": "ctrl-shift",
+      "description": "Open browser developer console.",
+      "winVersion": "Windows 11"
+    },
+    {
+      "id": "ctrl-shift-k",
+      "keys": "Ctrl + Shift + K",
+      "function": "Delete line",
+      "category": "ctrl-shift",
+      "description": "Delete entire line in text editor.",
+      "winVersion": "Windows 11"
+    }
+  ]
+}
