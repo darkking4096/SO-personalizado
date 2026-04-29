@@ -1,5 +1,7 @@
 import { ipcMain, app } from 'electron'
 import { IPC_CHANNELS } from './channels.js'
+import { ProfileManager } from '@shared/services/profileManager.js'
+import type { Profile } from '@shared/types/index.js'
 
 /**
  * Setup all IPC handlers for main process
@@ -64,41 +66,68 @@ export function setupIpcHandlers() {
     return { results: [] }
   })
 
-  // Profile Service Handlers (stub)
-  ipcMain.handle(IPC_CHANNELS.PROFILE_SAVE, async (_event, profile: unknown) => {
-    // TODO: Implement profile saving to JSON
-    console.log('[IPC] Saving profile', profile)
-    return { success: true, id: 'profile-1' }
+  // Profile Service Handlers
+  ipcMain.handle(IPC_CHANNELS.PROFILE_SAVE, async (_event, profile: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const savedProfile = await ProfileManager.saveProfile(profile)
+      return { success: true, data: savedProfile }
+    } catch (error) {
+      console.error('[IPC] Profile save error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   ipcMain.handle(IPC_CHANNELS.PROFILE_LOAD, async (_event, id: string) => {
-    // TODO: Implement profile loading from JSON
-    console.log(`[IPC] Loading profile: ${id}`)
-    return { id, name: 'Default' }
+    try {
+      const profile = await ProfileManager.loadProfile(id)
+      if (!profile) {
+        return { success: false, error: 'Profile not found' }
+      }
+      return { success: true, data: profile }
+    } catch (error) {
+      console.error('[IPC] Profile load error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   ipcMain.handle(IPC_CHANNELS.PROFILE_LIST, async () => {
-    // TODO: Implement profile listing
-    console.log('[IPC] Listing profiles')
-    return { profiles: [] }
+    try {
+      const profiles = await ProfileManager.listProfiles()
+      return { success: true, data: profiles }
+    } catch (error) {
+      console.error('[IPC] Profile list error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   ipcMain.handle(IPC_CHANNELS.PROFILE_DELETE, async (_event, id: string) => {
-    // TODO: Implement profile deletion
-    console.log(`[IPC] Deleting profile: ${id}`)
-    return { success: true }
+    try {
+      const success = await ProfileManager.deleteProfile(id)
+      return { success }
+    } catch (error) {
+      console.error('[IPC] Profile delete error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   ipcMain.handle(IPC_CHANNELS.PROFILE_APPLY, async (_event, id: string) => {
-    // TODO: Implement profile application
-    console.log(`[IPC] Applying profile: ${id}`)
-    return { success: true }
+    try {
+      const result = await ProfileManager.applyProfile(id)
+      return { success: result.success, data: result }
+    } catch (error) {
+      console.error('[IPC] Profile apply error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   ipcMain.handle(IPC_CHANNELS.PROFILE_SET_DEFAULT, async (_event, id: string) => {
-    // TODO: Implement default profile setting
-    console.log(`[IPC] Setting default profile: ${id}`)
-    return { success: true }
+    try {
+      const success = await ProfileManager.setAsDefault(id)
+      return { success }
+    } catch (error) {
+      console.error('[IPC] Profile set default error:', error)
+      return { success: false, error: (error as Error).message }
+    }
   })
 
   // Registry Service Handlers (stub)

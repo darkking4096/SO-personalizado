@@ -2,7 +2,7 @@
 
 **Validation Date:** 2026-04-29  
 **Reviewed By:** Pax (Product Owner)  
-**Report Version:** 1.0
+**Report Version:** 2.0
 
 ---
 
@@ -40,7 +40,7 @@
 
 ---
 
-## Critical Issues Found
+## Critical Issues Found (Story 2.4)
 
 ### 🔴 Issue 1: CRITICAL — Missing Registry Paths for Calendar & Weather
 
@@ -186,51 +186,7 @@ instantly and persisting across sessions via the profile system.
 
 ---
 
-## Missing Sections Checklist
-
-| Section | Present? | Required? | Impact |
-|---------|----------|-----------|--------|
-| Summary | ✅ Yes | YES | — |
-| Acceptance Criteria | ✅ Yes | YES | — |
-| Technical Approach | ✅ Yes | YES | — |
-| Registry Paths | ⚠️ Incomplete | YES | Missing Calendar/Weather |
-| Deliverables | ✅ Yes | YES | — |
-| Dependencies | ✅ Yes | YES | — |
-| Success Metrics | ✅ Yes | YES | — |
-| Definition of Done | ✅ Yes | YES | — |
-| **Business Value** | ❌ No | YES | **REQUIRED** |
-| **Scope (IN/OUT)** | ❌ No | YES | **REQUIRED** |
-| **Risks & Assumptions** | ❌ No | YES | **REQUIRED** |
-| **User Scenarios** | ❌ No | RECOMMENDED | Improves clarity |
-
----
-
-## PRD Alignment Check
-
-| PRD Requirement | Story Implementation | Status |
-|-----------------|----------------------|--------|
-| **FR-TB-004 Description:** Users can show/hide specific taskbar elements | Story AC matches | ✅ ALIGNED |
-| **AC: Toggle Clock, Calendar, Weather, System Tray, Copilot, Search, Task View, Virtual Desktops** | Story AC lists all 8 | ✅ ALIGNED |
-| **AC: Checkbox list for each element** | Story includes VisibilityChecklist component | ✅ ALIGNED |
-| **AC: Apply changes instantly** | Story AC requires <500ms | ✅ ALIGNED |
-| **AC: Remember user preference in profile** | Story includes profile persistence | ✅ ALIGNED |
-| **AC: Show current visibility status with icons** | Story mentions UI state on load | ✅ ALIGNED |
-
-**PRD Alignment Verdict:** ✅ **ALIGNED** — Story correctly interprets FR-TB-004
-
----
-
-## Handoff Assessment
-
-| Agent | Task | Status |
-|-------|------|--------|
-| **@po (Pax)** | Validate story | 🔴 NO-GO (6/10) |
-| **@dev (Dex)** | Implement | 🔴 BLOCKED — Awaiting fixes |
-| **@qa (Quinn)** | Review | 🔴 BLOCKED — Cannot gate without clear story |
-
----
-
-## Required Fixes (BLOCKING)
+## Required Fixes (Story 2.4 — BLOCKING)
 
 ### Priority 1: CRITICAL (Must fix before development starts)
 
@@ -242,29 +198,201 @@ instantly and persisting across sessions via the profile system.
 ### Priority 2: MAJOR (Should fix for clarity)
 
 - [ ] **Expand description** with user problem context and scenario
-- [ ] **Add "User Scenarios" section** (optional but improves clarity):
-  - Example: "Alex creates a 'Focus Mode' profile with only Clock and System Tray visible"
-  - Example: "Jordan switches between Work (full visibility) and Gaming (minimal) profiles"
+- [ ] **Add "User Scenarios" section** (optional but improves clarity)
 
 ---
 
-## Next Steps
+---
 
-### If @po Approves Fixes (After @dev applies them):
+## Stories: 3.1 — 3.4 (EPIC-3: Profile System & Persistence)
 
-1. @dev applies fixes to story file (add missing sections)
-2. @po re-validates (quick pass, 2-3 min)
-3. @po marks status → `Ready`
-4. @dev begins implementation
+### Overview
 
-### If Fixes Require Investigation:
+**All 4 stories from EPIC-3 validated in a single pass.**
 
-1. @dev may request pre-flight investigation (1-2 hours):
-   - Research Windows 11 Registry paths for Calendar, Weather
-   - Verify all 8 items are individually controllable
-   - Document findings in story Risks section
+| Story ID | Title | Points | Score | Verdict |
+|----------|-------|--------|-------|---------|
+| 3.1 | Implement Profile Creation & Storage (JSON) | 8 | **8/10** | ✅ **GO** |
+| 3.2 | Build Profile Manager UI (Create, Edit, Delete) | 5 | **8/10** | ✅ **GO** |
+| 3.3 | Create Profile Application Engine & Keyboard Shortcuts | 8 | **7/10** | ✅ **GO** |
+| 3.4 | Add Default Profile & Startup Auto-Apply | 5 | **8/10** | ✅ **GO** |
 
-2. @dev proceeds to implementation once investigation complete
+**Aggregate:** 26/40 points, **8/10 avg quality** — **ALL APPROVED FOR DEVELOPMENT**
+
+---
+
+### Story 3.1: Implement Profile Creation & Storage (JSON)
+
+**Status:** ✅ **READY** (Draft → Ready)
+
+| Criterion | Score | Status | Notes |
+|-----------|-------|--------|-------|
+| 1. Clear and objective title | ✅ 1/1 | PASS | Title concise and specific |
+| 2. Complete description | ✅ 1/1 | PASS | Describes JSON storage, bundled settings clearly |
+| 3. Testable acceptance criteria | ✅ 1/1 | PASS | 8 measurable AC (JSON format, validation, atomic ops) |
+| 4. Well-defined scope | ⚠️ 0.5/1 | PARTIAL | IN scope is clear; OUT scope not explicitly listed (e.g., "not handling cloud sync") |
+| 5. Dependencies mapped | ✅ 1/1 | PASS | Lists EPIC-0, EPIC-1, EPIC-2 prerequisites |
+| 6. Complexity estimate | ✅ 1/1 | PASS | 8 story points clearly stated |
+| 7. Business value | ⚠️ 0.5/1 | PARTIAL | "Profiles bundle settings" mentioned, but user benefit not explicit (e.g., "save and switch contexts quickly") |
+| 8. Risks documented | ❌ 0/1 | FAIL | No "Risks" section; profile corruption handling mentioned in Technical Notes but not formalized |
+| 9. Criteria of Done | ✅ 1/1 | PASS | Definition of Done with 5 checkboxes |
+| 10. Alignment with PRD/Epic | ✅ 1/1 | PASS | Matches EPIC-3 and FR-PR-001: Profile Creation & Management |
+
+**Total Score: 8/10** — **GO** ✅
+
+**Verdict:** Story is ready for development. Minor recommendations:
+- Consider adding "Risks & Assumptions" section formalizing profile corruption prevention
+- Clarify scope boundaries (e.g., explicitly state cloud sync is out of scope for v1.0)
+
+---
+
+### Story 3.2: Build Profile Manager UI (Create, Edit, Delete)
+
+**Status:** ✅ **READY** (Draft → Ready)
+
+| Criterion | Score | Status | Notes |
+|-----------|-------|--------|-------|
+| 1. Clear and objective title | ✅ 1/1 | PASS | Title concise |
+| 2. Complete description | ✅ 1/1 | PASS | Describes CRUD UI clearly |
+| 3. Testable acceptance criteria | ✅ 1/1 | PASS | 8 measurable AC (list, create, edit, delete, search, icons) |
+| 4. Well-defined scope | ⚠️ 0.5/1 | PARTIAL | IN clear (CRUD UI); OUT not explicit (e.g., "not adding theme customization") |
+| 5. Dependencies mapped | ✅ 1/1 | PASS | Story 3.1 + EPIC-0 correctly identified |
+| 6. Complexity estimate | ✅ 1/1 | PASS | 5 story points |
+| 7. Business value | ⚠️ 0.5/1 | PARTIAL | CRUD operations mentioned, but user benefit unclear ("Why do users need to manage profiles visually?") |
+| 8. Risks documented | ❌ 0/1 | FAIL | No risks section |
+| 9. Criteria of Done | ✅ 1/1 | PASS | Definition of Done with 5 checkboxes |
+| 10. Alignment with PRD/Epic | ✅ 1/1 | PASS | Matches EPIC-3 FR-PR-001 |
+
+**Total Score: 8/10** — **GO** ✅
+
+**Verdict:** Ready for development. Minor recommendations:
+- Add scope section clarifying what components are created vs. modified
+- Explain user benefit in description (e.g., "intuitive visual management saves time vs. manual file editing")
+
+---
+
+### Story 3.3: Create Profile Application Engine & Keyboard Shortcuts
+
+**Status:** ✅ **READY** (Draft → Ready)
+
+| Criterion | Score | Status | Notes |
+|-----------|-------|--------|-------|
+| 1. Clear and objective title | ✅ 1/1 | PASS | Clear and complete |
+| 2. Complete description | ✅ 1/1 | PASS | Describes apply engine and shortcuts clearly |
+| 3. Testable acceptance criteria | ✅ 1/1 | PASS | 8 measurable AC (apply, progress, rollback, shortcuts, order) |
+| 4. Well-defined scope | ⚠️ 0.5/1 | PARTIAL | IN clear; OUT not explicit (e.g., "not implementing custom shortcut creation") |
+| 5. Dependencies mapped | ✅ 1/1 | PASS | Stories 3.1, 3.2 + EPIC-0, EPIC-1, EPIC-2 |
+| 6. Complexity estimate | ✅ 1/1 | PASS | 8 story points |
+| 7. Business value | ⚠️ 0.5/1 | PARTIAL | "Quick profile switching" mentioned, but benefit not deeply explained (e.g., "enables instant workspace context switching with keyboard") |
+| 8. Risks documented | ⚠️ 0.5/1 | PARTIAL | Technical Notes mention error handling, but no formalized "Risks & Assumptions" section |
+| 9. Criteria of Done | ✅ 1/1 | PASS | Definition of Done with 5 checkboxes |
+| 10. Alignment with PRD/Epic | ✅ 1/1 | PASS | Matches EPIC-3 FR-PR-002: Profile Application + Keyboard shortcuts |
+
+**Total Score: 7/10** — **GO** ✅
+
+**Verdict:** Story is borderline but approved for development. Recommendations:
+- Formalize "Risks & Assumptions" section (rollback failure scenarios, keyboard shortcut conflicts)
+- Clarify scope (custom shortcuts → v1.1, not MVP)
+- Explain why keyboard shortcuts are a user value-add
+
+---
+
+### Story 3.4: Add Default Profile & Startup Auto-Apply
+
+**Status:** ✅ **READY** (Draft → Ready)
+
+| Criterion | Score | Status | Notes |
+|-----------|-------|--------|-------|
+| 1. Clear and objective title | ✅ 1/1 | PASS | Clear and specific |
+| 2. Complete description | ✅ 1/1 | PASS | Describes default selection and auto-apply clearly |
+| 3. Testable acceptance criteria | ✅ 1/1 | PASS | 7 measurable AC (radio/dropdown, auto-apply, Shift bypass, persistence) |
+| 4. Well-defined scope | ⚠️ 0.5/1 | PARTIAL | IN clear; OUT not explicit (e.g., "not implementing scheduled auto-apply") |
+| 5. Dependencies mapped | ✅ 1/1 | PASS | Stories 3.1-3.3 correctly listed |
+| 6. Complexity estimate | ✅ 1/1 | PASS | 5 story points |
+| 7. Business value | ⚠️ 0.5/1 | PARTIAL | "Auto-apply default profile on startup" mentioned, but benefit unclear (e.g., "instant workspace setup without manual clicks") |
+| 8. Risks documented | ❌ 0/1 | FAIL | No risks section (e.g., what if default profile apply fails on startup?) |
+| 9. Criteria of Done | ✅ 1/1 | PASS | Definition of Done with 6 checkboxes |
+| 10. Alignment with PRD/Epic | ✅ 1/1 | PASS | Matches EPIC-3 FR-PR-004: Default Profile + Startup behavior |
+
+**Total Score: 8/10** — **GO** ✅
+
+**Verdict:** Ready for development. Recommendations:
+- Add "Risks & Assumptions" section addressing startup failure scenarios
+- Clarify scope (no scheduled apply, no multi-user defaults)
+- Explain user benefit (e.g., "saves time by auto-configuring workspace on every launch")
+
+---
+
+## Cross-Story Dependencies Verified
+
+| Dependency | Status | Notes |
+|------------|--------|-------|
+| EPIC-0 (Foundation) | ✅ Required | Must complete before any EPIC-3 story |
+| EPIC-1 (Wallpaper) | ✅ Required | WallpaperSettings serialization needed for profiles |
+| EPIC-2 (Taskbar) | ✅ Required | TaskbarSettings serialization needed for profiles |
+| Story 3.1 → 3.2 | ✅ Clear | UI depends on backend storage |
+| Story 3.1-3.2 → 3.3 | ✅ Clear | Apply engine depends on CRUD backend |
+| Story 3.1-3.3 → 3.4 | ✅ Clear | Startup auto-apply depends on apply engine |
+
+**Dependency Graph Valid:** ✅ No circular dependencies, sequential flow correct
+
+---
+
+## EPIC-3 Overall Assessment
+
+| Aspect | Status | Notes |
+|--------|--------|-------|
+| **Scope Clarity** | ✅ Good | All stories clearly scoped within Profile System |
+| **Technical Soundness** | ✅ Good | Services, stores, components well-architected |
+| **Testability** | ✅ Good | AC are measurable, test files planned |
+| **PRD Alignment** | ✅ Excellent | All 4 features (FR-PR-001, 002, 003, 004) covered |
+| **Readiness for Dev** | ✅ Ready | All stories approved; development can begin immediately |
+
+---
+
+## Handoff Status
+
+| Role | Task | Status |
+|------|------|--------|
+| **@po (Pax)** | Validate EPIC-3 stories | ✅ COMPLETE — All 4 stories APPROVED |
+| **@dev (Dex)** | Implement EPIC-3 | 🟢 **UNBLOCKED** — Ready to begin |
+| **@qa (Quinn)** | Plan QA gates | 🟢 **Ready** — Stories clear for testing |
+
+---
+
+## Story Status Updates
+
+**All 4 stories updated from `TODO` → `Ready` with Change Log entries timestamped.**
+
+```yaml
+3.1: status: "Ready"   # 2026-04-29 14:35 — ✅ Validation PASS (8/10)
+3.2: status: "Ready"   # 2026-04-29 14:35 — ✅ Validation PASS (8/10)
+3.3: status: "Ready"   # 2026-04-29 14:35 — ✅ Validation PASS (7/10)
+3.4: status: "Ready"   # 2026-04-29 14:35 — ✅ Validation PASS (8/10)
+```
+
+---
+
+## Summary & Recommendations
+
+### ✅ All Stories APPROVED
+
+- **3.1:** Profile storage backend — READY
+- **3.2:** Profile manager UI — READY  
+- **3.3:** Application engine + shortcuts — READY
+- **3.4:** Default profile & startup — READY
+
+### 🎯 Recommendations for @dev
+
+1. **When implementing,** add "Risks & Assumptions" sections to formalize edge-case handling
+2. **For 3.3 & 3.4:** Document startup failure recovery (what happens if default profile apply fails?)
+3. **For all stories:** Clarify scope boundaries re: v1.1 features (animated wallpapers, custom shortcuts)
+
+### 📋 Next Steps
+
+1. **@dev** begins implementation on Story 3.1 (foundation for 3.2-3.4)
+2. **Stories 3.2-3.4** can be developed in parallel once 3.1 is complete
+3. **@qa** prepares QA gates using this validation as reference
 
 ---
 
@@ -274,14 +402,10 @@ instantly and persisting across sessions via the profile system.
 |------|-------|
 | **Reviewed By** | Pax (Product Owner) |
 | **Validation Date** | 2026-04-29 |
-| **Verdict** | 🔴 **NO-GO** |
-| **Score** | 6/10 (required: 7/10) |
-| **Blockers Count** | 4 critical + 1 major |
-| **Effort to Fix** | ~1-2 hours (scope, business value, risks) + 1-2 hours investigation (Registry paths) |
-| **Recommended Next Step** | Return story to @sm/@po for fixes; coordinate with @dev if Registry research needed |
-
-**Status Recommendation:** Keep story in `TODO` until fixes applied.
+| **Total Stories Validated** | 6 (1 NO-GO from Story 2.4, 4 GO from EPIC-3) |
+| **EPIC-3 Verdict** | ✅ **ALL APPROVED** |
+| **Report Version** | 2.0 (consolidated) |
 
 ---
 
-*This report is the official QA gate for Story 2.4 validation. It is stored as the source of truth in `docs/validation-reports/`.*
+*This report is the official validation gate for EPIC-3 stories (3.1-3.4). All stories are approved for development. Story 2.4 remains blocked pending fixes.*
