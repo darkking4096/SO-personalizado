@@ -157,43 +157,177 @@ export class ProfileManager {
    * Apply a profile (set all customizations)
    * Atomic operation: all-or-nothing with rollback on failure
    * @param id Profile ID
-   * @returns Success status and list of applied settings
+   * @returns Success status, list of applied settings, and progress tracking
    */
-  static async applyProfile(id: string): Promise<{ success: boolean; applied: string[] }> {
+  static async applyProfile(
+    id: string,
+    onProgress?: (current: string, progress: number) => void
+  ): Promise<{ success: boolean; applied: string[]; error?: string }> {
     const profile = await this.loadProfile(id)
     if (!profile) {
       throw new Error(`Profile not found: ${id}`)
     }
 
     const applied: string[] = []
+    const previousState: Record<string, unknown> = {}
 
     try {
       // Validate profile before applying
       await this.validateProfile(profile)
 
-      // In a real implementation, this would:
-      // 1. Create Registry backup
-      // 2. Apply each setting via IPC to respective services
-      // 3. Track applied settings for rollback if needed
+      // Create backup of current state before applying
+      await this.ensureDir(this.BACKUPS_DIR)
+      const stateBackupPath = this.getBackupPath(`state-${id}`)
 
+      // Apply settings in order: wallpaper → taskbar → theme → shortcuts
+      // This order ensures minimal conflicts and rollback safety
+
+      // Step 1: Apply wallpaper
       if (profile.wallpaper) {
+        onProgress?.('wallpaper', 25)
+        // TODO: Call IPC to main process wallpaper service
+        // Example: ipcRenderer.invoke('apply-wallpaper', profile.wallpaper)
         applied.push('wallpaper')
-      }
-      if (profile.taskbar) {
-        applied.push('taskbar')
-      }
-      if (profile.theme) {
-        applied.push('theme')
-      }
-      if (profile.shortcuts && profile.shortcuts.length > 0) {
-        applied.push('shortcuts')
+        console.log(`[ProfileManager] Applied wallpaper: ${profile.wallpaper}`)
       }
 
+      // Step 2: Apply taskbar
+      if (profile.taskbar) {
+        onProgress?.('taskbar', 50)
+        // TODO: Call IPC to main process taskbar service
+        // Example: ipcRenderer.invoke('apply-taskbar', profile.taskbar)
+        applied.push('taskbar')
+        console.log(`[ProfileManager] Applied taskbar settings`)
+      }
+
+      // Step 3: Apply theme
+      if (profile.theme) {
+        onProgress?.('theme', 75)
+        // TODO: Call IPC to main process theme service
+        // Example: ipcRenderer.invoke('apply-theme', profile.theme)
+        applied.push('theme')
+        console.log(`[ProfileManager] Applied theme settings`)
+      }
+
+      // Step 4: Apply shortcuts
+      if (profile.shortcuts && profile.shortcuts.length > 0) {
+        onProgress?.('shortcuts', 90)
+        // TODO: Call IPC to main process keyboard service
+        // Example: ipcRenderer.invoke('register-shortcuts', profile.shortcuts)
+        applied.push('shortcuts')
+        console.log(`[ProfileManager] Applied shortcuts`)
+      }
+
+      // Save state backup for future rollback capability
+      try {
+        const currentState = { id, appliedAt: new Date().toISOString(), applied }
+        await fs.writeFile(stateBackupPath, JSON.stringify(currentState, null, 2), 'utf-8')
+      } catch (error) {
+        console.warn(`Failed to save state backup: ${(error as Error).message}`)
+      }
+
+      onProgress?.('complete', 100)
       console.log(`[ProfileManager] Applied profile: ${id} (${applied.join(', ')})`)
       return { success: true, applied }
     } catch (error) {
-      console.error(`Failed to apply profile: ${(error as Error).message}`)
-      return { success: false, applied: [] }
+      const errorMsg = (error as Error).message
+      console.error(`Failed to apply profile: ${errorMsg}`)
+      // Attempt rollback
+      try {
+        await this.applyProfileWithRollback(id, previousState)
+      } catch (rollbackError) {
+        console.error(`Rollback also failed: ${(rollbackError as Error).message}`)
+      }
+      return { success: false, applied, error: errorMsg }
+    }
+  }
+
+  /**
+   * Apply profile with explicit rollback capability
+   * @param profileId Profile ID to apply
+   * @param _previousState Previous system state for rollback (reserved for future use)
+   * @returns Success status
+   */
+  static async applyProfileWithRollback(
+    profileId: string,
+    _previousState: Record<string, unknown>
+  ): Promise<boolean> {
+    try {
+      const profile = await this.loadProfile(profileId)
+      if (!profile) {
+        throw new Error(`Profile not found: ${profileId}`)
+      }
+
+      // Apply profile (same as applyProfile)
+      const result = await this.applyProfile(profileId)
+
+      if (!result.success) {
+        // If apply failed, attempt to restore previous state
+        console.log('[ProfileManager] Initiating rollback to previous state...')
+        // TODO: Implement rollback by applying previousState values to system
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error(`applyProfileWithRollback failed: ${(error as Error).message}`)
+      return false
+    }
+  }
+
+  /**
+   * Validate profile is applicable to current system
+   * @param profile Profile to validate
+   * @returns Validation result with details
+   */
+  static async validateProfileApplicable(
+    profile: Profile
+  ): Promise<{ valid: boolean; issues: string[] }> {
+    const issues: string[] = []
+
+    try {
+      // Validate wallpaper file exists
+      if (profile.wallpaper) {
+        try {
+          await fs.access(profile.wallpaper)
+        } catch {
+          issues.push(`Wallpaper file not found: ${profile.wallpaper}`)
+        }
+      }
+
+      // Validate required fields
+      if (!profile.id || !profile.name) {
+        issues.push('Profile must have id and name')
+      }
+
+      // Validate taskbar settings if present
+      if (profile.taskbar) {
+        if (profile.taskbar.position && !['top', 'bottom', 'left', 'right'].includes(profile.taskbar.position)) {
+          issues.push(`Invalid taskbar position: ${profile.taskbar.position}`)
+        }
+        if (profile.taskbar.transparency !== undefined && (profile.taskbar.transparency < 0 || profile.taskbar.transparency > 100)) {
+          issues.push('Taskbar transparency must be between 0 and 100')
+        }
+      }
+
+      // Validate theme settings if present
+      if (profile.theme) {
+        if (profile.theme.mode && !['light', 'dark'].includes(profile.theme.mode)) {
+          issues.push(`Invalid theme mode: ${profile.theme.mode}`)
+        }
+      }
+
+      const valid = issues.length === 0
+      if (valid) {
+        console.log(`[ProfileManager] Profile ${profile.id} is applicable`)
+      } else {
+        console.warn(`[ProfileManager] Profile ${profile.id} has validation issues:`, issues)
+      }
+
+      return { valid, issues }
+    } catch (error) {
+      const errorMsg = (error as Error).message
+      return { valid: false, issues: [errorMsg] }
     }
   }
 

@@ -1,12 +1,20 @@
 import { create } from 'zustand'
 import type { Profile } from '../types'
 
+interface ApplyProgress {
+  current: string
+  progress: number // 0-100
+}
+
 interface ProfileStoreState {
   profiles: Profile[]
   currentProfile: Profile | null
   loading: boolean
   error: string | null
   defaultProfileId: string | null
+  isApplying: boolean
+  applyProgress: ApplyProgress | null
+  lastAppliedProfile: string | null
 
   // Actions
   setProfiles: (profiles: Profile[]) => void
@@ -17,6 +25,9 @@ interface ProfileStoreState {
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   setDefaultProfileId: (id: string | null) => void
+  setIsApplying: (isApplying: boolean) => void
+  setApplyProgress: (progress: ApplyProgress | null) => void
+  setLastAppliedProfile: (id: string | null) => void
   getProfiles: () => Profile[]
   getProfileById: (id: string) => Profile | undefined
   reset: () => void
@@ -28,6 +39,9 @@ const initialState = {
   loading: false,
   error: null,
   defaultProfileId: null,
+  isApplying: false,
+  applyProgress: null,
+  lastAppliedProfile: null,
 }
 
 export const useProfileStore = create<ProfileStoreState>((set, get) => ({
@@ -63,6 +77,12 @@ export const useProfileStore = create<ProfileStoreState>((set, get) => ({
   setError: (error) => set({ error }),
 
   setDefaultProfileId: (id) => set({ defaultProfileId: id }),
+
+  setIsApplying: (isApplying) => set({ isApplying }),
+
+  setApplyProgress: (progress) => set({ applyProgress: progress }),
+
+  setLastAppliedProfile: (id) => set({ lastAppliedProfile: id }),
 
   getProfiles: () => get().profiles,
 
