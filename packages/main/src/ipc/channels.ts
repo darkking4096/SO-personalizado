@@ -28,6 +28,7 @@ export const IPC_CHANNELS = {
   PROFILE_LIST: 'profile:list',
   PROFILE_APPLY: 'profile:apply',
   PROFILE_SET_DEFAULT: 'profile:set-default',
+  PROFILE_GET_DEFAULT: 'profile:get-default',
 
   // Registry Service
   REGISTRY_READ: 'registry:read',

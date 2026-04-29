@@ -23,6 +23,16 @@ export class ProfileManager {
     'backups'
   )
 
+  private static readonly CONFIG_DIR = path.join(
+    process.env.APPDATA || process.env.HOME || '',
+    'PersonalizacionSO'
+  )
+
+  private static readonly CONFIG_FILE = path.join(
+    this.CONFIG_DIR,
+    'config.json'
+  )
+
   /**
    * Initialize profile directory if it doesn't exist
    */
@@ -403,19 +413,56 @@ export class ProfileManager {
   }
 
   /**
+   * Read config file
+   * @returns Config object or empty object if not found
+   */
+  private static async readConfig(): Promise<Record<string, unknown>> {
+    try {
+      const data = await fs.readFile(this.CONFIG_FILE, 'utf-8')
+      return JSON.parse(data) as Record<string, unknown>
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return {}
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Write config file
+   * @param config Config object to write
+   */
+  private static async writeConfig(config: Record<string, unknown>): Promise<void> {
+    await this.ensureDir(this.CONFIG_DIR)
+    await fs.writeFile(this.CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8')
+  }
+
+  /**
    * Set a profile as default (auto-apply on system startup)
-   * @param id Profile ID
+   * @param id Profile ID (or empty string to clear default)
    * @returns Success status
    */
   static async setAsDefault(id: string): Promise<boolean> {
+    // Allow clearing default with empty string or null
+    if (id === '' || id === null) {
+      const config = await this.readConfig()
+      delete config.defaultProfileId
+      await this.writeConfig(config)
+      console.log('[ProfileManager] Cleared default profile')
+      return true
+    }
+
     // Verify profile exists
     const profile = await this.loadProfile(id)
     if (!profile) {
       throw new Error(`Profile not found: ${id}`)
     }
 
-    // TODO: Store default profile ID in Registry
-    // HKCU\Software\PersonalizacionSO\Settings (default_profile_id)
+    // Store default profile ID in config.json
+    const config = await this.readConfig()
+    config.defaultProfileId = id
+    await this.writeConfig(config)
+
     console.log(`[ProfileManager] Set default profile: ${id}`)
     return true
   }
@@ -425,10 +472,17 @@ export class ProfileManager {
    * @returns Profile ID or null if none set
    */
   static async getDefaultProfile(): Promise<string | null> {
-    // TODO: Read default profile ID from Registry
-    // HKCU\Software\PersonalizacionSO\Settings (default_profile_id)
-    console.log('[ProfileManager] Getting default profile')
-    return null
+    // Read default profile ID from config.json
+    const config = await this.readConfig()
+    const defaultId = config.defaultProfileId as string | null | undefined
+
+    if (!defaultId) {
+      console.log('[ProfileManager] No default profile set')
+      return null
+    }
+
+    console.log(`[ProfileManager] Got default profile: ${defaultId}`)
+    return defaultId
   }
 
   /**

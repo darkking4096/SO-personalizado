@@ -130,6 +130,16 @@ export function setupIpcHandlers() {
     }
   })
 
+  ipcMain.handle(IPC_CHANNELS.PROFILE_GET_DEFAULT, async () => {
+    try {
+      const defaultId = await ProfileManager.getDefaultProfile()
+      return { success: true, data: defaultId }
+    } catch (error) {
+      console.error('[IPC] Profile get default error:', error)
+      return { success: false, error: (error as Error).message }
+    }
+  })
+
   // Registry Service Handlers (stub)
   ipcMain.handle(IPC_CHANNELS.REGISTRY_READ, async (_event, key: string) => {
     // TODO: Implement Registry reading

@@ -1,7 +1,8 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
 import path from 'path'
 import { setupIpcHandlers } from './ipc/handlers.js'
+import { ProfileManager } from '@shared/services/profileManager.js'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built resources dir when using asar.
@@ -34,10 +35,41 @@ function createWindow() {
   return mainWindow
 }
 
+/**
+ * Apply default profile on startup (unless Shift is held)
+ * Called from renderer after it detects Shift key state
+ */
+async function applyDefaultProfileOnStartup(): Promise<void> {
+  try {
+    const defaultProfileId = await ProfileManager.getDefaultProfile()
+    if (!defaultProfileId) {
+      console.log('[Main] No default profile set, skipping auto-apply')
+      return
+    }
+
+    console.log(`[Main] Applying default profile on startup: ${defaultProfileId}`)
+    const result = await ProfileManager.applyProfile(defaultProfileId)
+
+    if (result.success) {
+      console.log('[Main] Default profile applied successfully on startup')
+    } else {
+      console.error(`[Main] Failed to apply default profile: ${result.error}`)
+    }
+  } catch (error) {
+    console.error('[Main] Error applying default profile on startup:', error)
+  }
+}
+
 // App event listeners
 app.on('ready', () => {
   createWindow()
   setupIpcHandlers()
+
+  // Setup IPC handler for startup auto-apply (called from renderer)
+  ipcMain.handle('app:apply-default-on-startup', async () => {
+    await applyDefaultProfileOnStartup()
+    return { success: true }
+  })
 })
 
 app.on('window-all-closed', () => {
