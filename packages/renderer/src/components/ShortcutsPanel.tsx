@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ShortcutSearchBar } from './ShortcutSearchBar';
 import { ShortcutFilters } from './ShortcutFilters';
 import { ShortcutList } from './ShortcutList';
+import { PinnedSection } from './PinnedSection';
 import { useShortcutsStore } from '../stores/shortcutsStore';
 
 export const ShortcutsPanel: React.FC = () => {
@@ -21,6 +22,8 @@ export const ShortcutsPanel: React.FC = () => {
           Search and explore Windows 11 keyboard shortcuts to boost your productivity.
         </p>
       </div>
+
+      <PinnedSection />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4">
         <ShortcutSearchBar />

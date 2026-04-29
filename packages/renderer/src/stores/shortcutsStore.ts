@@ -8,11 +8,16 @@ interface ShortcutsStore {
   searchResults: Shortcut[];
   isSearching: boolean;
   allCategories: string[];
+  pinnedShortcuts: Shortcut[];
+  pinnedIds: Set<string>;
 
   setSearchQuery: (query: string) => void;
   setSelectedCategories: (categories: string[]) => void;
   clearSearch: () => void;
   initializeCategories: () => void;
+  togglePin: (id: string) => void;
+  isPinned: (id: string) => boolean;
+  loadPinnedShortcuts: () => void;
 }
 
 export const useShortcutsStore = create<ShortcutsStore>((set, get) => ({
@@ -21,6 +26,8 @@ export const useShortcutsStore = create<ShortcutsStore>((set, get) => ({
   searchResults: [],
   isSearching: false,
   allCategories: [],
+  pinnedShortcuts: [],
+  pinnedIds: new Set(),
 
   setSearchQuery: (query: string) => {
     set({ searchQuery: query, isSearching: true });
@@ -57,5 +64,21 @@ export const useShortcutsStore = create<ShortcutsStore>((set, get) => ({
       allCategories: categories,
       searchResults: shortcutSearchService.getAllShortcuts(),
     });
+    get().loadPinnedShortcuts();
+  },
+
+  togglePin: (id: string) => {
+    shortcutSearchService.togglePin(id);
+    get().loadPinnedShortcuts();
+  },
+
+  isPinned: (id: string) => {
+    return shortcutSearchService.isPinned(id);
+  },
+
+  loadPinnedShortcuts: () => {
+    const pinned = shortcutSearchService.getPinnedShortcuts();
+    const pinnedIds = new Set(shortcutSearchService.getPinnedIds());
+    set({ pinnedShortcuts: pinned, pinnedIds });
   },
 }));
