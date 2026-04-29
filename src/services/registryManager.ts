@@ -388,6 +388,118 @@ export class RegistryManager {
   }
 
   /**
+   * Taskbar item visibility mapping
+   * Maps item names to Registry keys
+   */
+  private static readonly VISIBILITY_KEYS: Record<string, { key: string; defaultValue: number }> = {
+    clock: { key: 'ShowSecondsInSystemClock', defaultValue: 0 },
+    systemTray: { key: 'ShowSystemTray', defaultValue: 1 },
+    search: { key: 'TaskbarSearchBoxMode', defaultValue: 2 },
+    taskView: { key: 'ShowTaskViewButton', defaultValue: 1 },
+    virtualDesktops: { key: 'VirtualDesktopTaskbarButton', defaultValue: 0 },
+    copilot: { key: 'ShowCopilotButton', defaultValue: 0 },
+    weather: { key: 'ShowWeatherButton', defaultValue: 0 },
+    calendar: { key: 'ShowCalendarButton', defaultValue: 0 },
+  }
+
+  /**
+   * Get item visibility status
+   * @param itemName Item name (clock, copilot, etc.)
+   * @returns Visibility status
+   */
+  static async getItemVisibility(itemName: string): Promise<boolean> {
+    try {
+      const itemKey = this.VISIBILITY_KEYS[itemName]
+      if (!itemKey) {
+        console.warn(`[RegistryManager] Unknown visibility item: ${itemName}`)
+        return true // Default to visible
+      }
+
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const value = await this.read(hive, path, itemKey.key)
+
+      if (value === null || value === undefined) {
+        // Return default visibility for this item
+        return itemKey.defaultValue !== 0
+      }
+
+      const numValue = parseInt(String(value), 10)
+      return numValue !== 0
+    } catch (error) {
+      console.error(`[RegistryManager] Error reading visibility for ${itemName}:`, error)
+      return true // Default to visible on error
+    }
+  }
+
+  /**
+   * Set item visibility status
+   * @param itemName Item name (clock, copilot, etc.)
+   * @param visible Visibility status
+   * @returns Success status
+   */
+  static async setItemVisibility(itemName: string, visible: boolean): Promise<boolean> {
+    try {
+      const itemKey = this.VISIBILITY_KEYS[itemName]
+      if (!itemKey) {
+        console.error(`[RegistryManager] Unknown visibility item: ${itemName}`)
+        return false
+      }
+
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const value = visible ? 1 : 0
+
+      const success = await this.write(hive, path, itemKey.key, value, 'dword')
+
+      if (success) {
+        // Restart Explorer to apply visibility changes
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error(`[RegistryManager] Error setting visibility for ${itemName}:`, error)
+      return false
+    }
+  }
+
+  /**
+   * Get all taskbar item visibility statuses
+   * @returns Record of item name to visibility status
+   */
+  static async getAllItemVisibility(): Promise<Record<string, boolean>> {
+    const results: Record<string, boolean> = {}
+
+    for (const itemName of Object.keys(this.VISIBILITY_KEYS)) {
+      results[itemName] = await this.getItemVisibility(itemName)
+    }
+
+    return results
+  }
+
+  /**
+   * Set multiple item visibilities at once
+   * @param items Record of item name to visibility status
+   * @returns Success status
+   */
+  static async setMultipleItemVisibility(items: Record<string, boolean>): Promise<boolean> {
+    try {
+      let allSuccess = true
+
+      for (const [itemName, visible] of Object.entries(items)) {
+        const success = await this.setItemVisibility(itemName, visible)
+        allSuccess = allSuccess && success
+      }
+
+      return allSuccess
+    } catch (error) {
+      console.error('[RegistryManager] Error setting multiple visibilities:', error)
+      return false
+    }
+  }
+
+  /**
    * Create Registry backup (for rollback)
    * @returns Backup identifier
    */

@@ -51,6 +51,7 @@ export interface TaskbarState {
   size: TaskbarSize
   visibility: boolean
   autoHide: boolean
+  visibleItems?: Record<string, boolean>
 }
 
 // Keyboard types

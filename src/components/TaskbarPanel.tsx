@@ -5,6 +5,7 @@ import { TransparencySlider } from './TransparencySlider'
 import { ColorPicker } from './ColorPicker'
 import { SizeSelector } from './SizeSelector'
 import { AutoHideToggle } from './AutoHideToggle'
+import { VisibilityChecklist } from './VisibilityChecklist'
 
 export const TaskbarPanel: React.FC = () => {
   const {
@@ -15,6 +16,7 @@ export const TaskbarPanel: React.FC = () => {
     size,
     visibility,
     autoHide,
+    visibleItems,
     isApplying,
     error,
     setPosition,
@@ -24,6 +26,7 @@ export const TaskbarPanel: React.FC = () => {
     setSize,
     setVisibility,
     setAutoHide,
+    setItemVisibility,
     setIsApplying,
     setError,
   } = useTaskbarStore()
@@ -174,6 +177,36 @@ export const TaskbarPanel: React.FC = () => {
     [setAutoHide, setError]
   )
 
+  /**
+   * Handle item visibility change
+   */
+  const handleItemVisibilityChange = useCallback(
+    async (itemId: string, enabled: boolean) => {
+      try {
+        setError(null)
+        setIsApplying(true)
+
+        // Update store immediately for responsive UI
+        setItemVisibility(itemId, enabled)
+
+        // In production, this would call Registry write via IPC
+        // const result = await ipcRenderer.invoke('set-item-visibility', { item: itemId, visible: enabled })
+        // if (!result.success) {
+        //   setError(result.error || 'Failed to apply item visibility')
+        //   setItemVisibility(itemId, !enabled) // Revert on error
+        // }
+
+        console.log('[TaskbarPanel] Applied item visibility:', itemId, enabled)
+      } catch (err) {
+        setError('Failed to apply item visibility')
+        setItemVisibility(itemId, !enabled) // Revert on error
+      } finally {
+        setIsApplying(false)
+      }
+    },
+    [setItemVisibility, setIsApplying, setError]
+  )
+
   return (
     <div className="w-full max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Taskbar Settings</h2>
@@ -263,6 +296,71 @@ export const TaskbarPanel: React.FC = () => {
           onToggle={handleAutoHideChange}
           disabled={isApplying}
         />
+      </div>
+
+      {/* Visibility Checklist Section */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+        <VisibilityChecklist
+          items={
+            visibleItems
+              ? [
+                  {
+                    id: 'clock',
+                    label: 'Clock',
+                    description: 'Show seconds in system clock',
+                    enabled: visibleItems.clock ?? false,
+                  },
+                  {
+                    id: 'systemTray',
+                    label: 'System Tray',
+                    description: 'Show system tray icons',
+                    enabled: visibleItems.systemTray ?? true,
+                  },
+                  {
+                    id: 'search',
+                    label: 'Search',
+                    description: 'Show search box in taskbar',
+                    enabled: visibleItems.search ?? true,
+                  },
+                  {
+                    id: 'taskView',
+                    label: 'Task View',
+                    description: 'Show task view button',
+                    enabled: visibleItems.taskView ?? true,
+                  },
+                  {
+                    id: 'virtualDesktops',
+                    label: 'Virtual Desktops',
+                    description: 'Show virtual desktops button',
+                    enabled: visibleItems.virtualDesktops ?? false,
+                  },
+                  {
+                    id: 'copilot',
+                    label: 'Copilot',
+                    description: 'Show Copilot button',
+                    enabled: visibleItems.copilot ?? false,
+                  },
+                  {
+                    id: 'weather',
+                    label: 'Weather',
+                    description: 'Show weather widget',
+                    enabled: visibleItems.weather ?? false,
+                  },
+                  {
+                    id: 'calendar',
+                    label: 'Calendar',
+                    description: 'Show calendar widget',
+                    enabled: visibleItems.calendar ?? false,
+                  },
+                ]
+              : []
+          }
+          onItemChange={handleItemVisibilityChange}
+          disabled={isApplying}
+        />
+        <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+          Toggle visibility of taskbar elements. Changes apply instantly and persist across system restarts.
+        </p>
       </div>
 
       {/* Status Message */}

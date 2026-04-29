@@ -16,6 +16,8 @@ interface TaskbarStoreState extends TaskbarState {
   setAutoHide: (autoHide: boolean) => void
   setIsApplying: (applying: boolean) => void
   setError: (error: string | null) => void
+  setVisibleItems: (items: Record<string, boolean>) => void
+  setItemVisibility: (itemName: string, visible: boolean) => void
   reset: () => void
 }
 
@@ -26,6 +28,16 @@ const initialState = {
   size: 'default' as const,
   visibility: true,
   autoHide: false,
+  visibleItems: {
+    clock: false,
+    systemTray: true,
+    search: true,
+    taskView: true,
+    virtualDesktops: false,
+    copilot: false,
+    weather: false,
+    calendar: false,
+  },
   isApplying: false,
   error: null,
   previewBackgroundColor: '#000000',
@@ -45,6 +57,14 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
   setAutoHide: (autoHide) => set({ autoHide }),
   setIsApplying: (isApplying) => set({ isApplying }),
   setError: (error) => set({ error }),
+  setVisibleItems: (visibleItems) => set({ visibleItems }),
+  setItemVisibility: (itemName, visible) =>
+    set((state) => ({
+      visibleItems: {
+        ...state.visibleItems,
+        [itemName]: visible,
+      },
+    })),
   reset: () =>
     set({
       position: 'bottom',
@@ -53,6 +73,16 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
       size: 'default',
       visibility: true,
       autoHide: false,
+      visibleItems: {
+        clock: false,
+        systemTray: true,
+        search: true,
+        taskView: true,
+        virtualDesktops: false,
+        copilot: false,
+        weather: false,
+        calendar: false,
+      },
       isApplying: false,
       error: null,
       previewBackgroundColor: '#000000',
