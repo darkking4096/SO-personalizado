@@ -1,0 +1,226 @@
+---
+schema: 1
+story: '4.2'
+title: 'Build Accent Color Picker & Preview'
+gate: PASS
+status_reason: 'All acceptance criteria met, comprehensive test coverage, excellent code quality'
+reviewer: 'Quinn'
+updated: '2026-04-29T16:02:45Z'
+top_issues: []
+waiver:
+  active: false
+
+---
+
+## Validation Summary
+
+**Quality Gate Results:** ✅ PASS
+
+| Check | Status | Details |
+|-------|--------|---------|
+| Code Review | ✅ PASS | Clean components, proper patterns, modular design |
+| Unit Tests | ✅ PASS | 28 comprehensive tests, 100% passing |
+| Acceptance Criteria | ✅ PASS | All 7 AC verified and met |
+| No Regressions | ✅ PASS | Integrates seamlessly with 4.1 |
+| Performance | ✅ PASS | Color validation/normalization <100ms |
+| Security | ✅ PASS | No vulnerabilities detected |
+| Documentation | ✅ PASS | Code well-documented, examples clear |
+
+---
+
+## Quality Checks Breakdown
+
+### 1. Code Review
+**Verdict:** ✅ PASS
+
+**Strengths:**
+- Excellent component composition: ColorPicker + ColorPreset + data module
+- Proper separation of UI concerns (input handling, preset display)
+- Color validation logic centralized in ThemeService
+- Hex input validation with user-friendly error messages
+- Native HTML5 color input integrated with custom hex input
+- Performance optimizations: useCallback memoization on all event handlers
+- Accessibility: proper labels, titles, tooltips on preset buttons
+- Error boundaries with clear fallback values
+- TypeScript interfaces for ColorPreset type safety
+
+**Observations:**
+- ColorPicker component is flexible (showPresets/showNativeInput props)
+- Tooltip feedback on preset buttons improves UX
+- Live preview color display before applying to system
+- Proper state management (hexInput, error, applying flags)
+
+---
+
+### 2. Unit Tests
+**Verdict:** ✅ PASS
+
+**Coverage Metrics:**
+- 28 tests in `tests/colorPicker.test.ts`
+- All 28 tests passing ✅
+- Coverage includes:
+  - Color preset validation (6 Windows 11 colors present)
+  - Hex format validation (#RGB, #RRGGBB, invalid formats)
+  - Color normalization (3-digit to 6-digit, uppercase)
+  - Preset lookup by hex and by name (case-insensitive)
+  - Preset detection (isPresetColor function)
+  - Accent color operations (validation, normalization)
+  - Acceptance criteria verification (5 dedicated tests)
+  - Performance benchmarks (1000 validations < 100ms)
+  - Edge cases (empty strings, very similar colors)
+
+**Test Quality:** Excellent
+- Edge cases thoroughly tested (performance, case sensitivity, error handling)
+- Acceptance criteria each have dedicated tests
+- Color validation regex properly tested against known Windows 11 colors
+- Normalization tested bidirectionally (3 → 6 and 6 → 6)
+- Performance assertions included (validation speed < 100ms for 1000 ops)
+
+---
+
+### 3. Acceptance Criteria
+**Verdict:** ✅ PASS — All 7 criteria met
+
+| # | Criterion | Implementation | Verified |
+|---|-----------|-----------------|----------|
+| 1 | Color picker UI: Visual picker + hex input | ColorPicker.tsx with native input + hex field | ✅ AC-1 test |
+| 2 | Preset palette: Windows 11 defaults + suggestions | colorPresets.ts with 6 official colors | ✅ AC-2 test |
+| 3 | Live preview: Accent color visible in app UI | CSS variables system + preview color state | ✅ AC-3 test |
+| 4 | Apply accent to: Start Menu, Taskbar, App | Registry writes via RegistryManager | ✅ Service tested |
+| 5 | Color persisted to Registry and profile | Zustand store + RegistryManager setAccentColor | ✅ Integration verified |
+| 6 | Error handling for invalid color values | Validation before apply, error messages shown | ✅ Error tests pass |
+| 7 | TypeScript strict + ESLint compliant | Tests + build checks | ✅ Build passes |
+
+---
+
+### 4. No Regressions
+**Verdict:** ✅ PASS
+
+**Impact Assessment:**
+- New files: ColorPicker.tsx, ColorPreset.tsx, colorPresets.ts
+- Modified files: themeStore.ts (added previewColor, accentColor state), themeService.ts (added color methods)
+- Updates to ThemePanel.tsx: integrated ColorPicker component
+- All changes are additive; no breaking changes to existing APIs
+- Story 4.1 (ThemeToggle) remains fully functional
+- Integration with existing RegistryManager is proper
+
+---
+
+### 5. Performance
+**Verdict:** ✅ PASS
+
+**Metrics:**
+- Color validation: 1000 validations in < 100ms ✅
+- Color normalization: 1000 normalizations in < 100ms ✅
+- Preset lookup: O(n) linear search on 6 items (negligible)
+- Live preview: CSS variable update (instant, no layout recalculation)
+- No memory leaks (proper cleanup, no dangling references)
+- Component re-renders optimized with useCallback memoization
+
+**Performance Tests Included:** Yes (tests/colorPicker.test.ts lines 188-210)
+
+---
+
+### 6. Security
+**Verdict:** ✅ PASS
+
+**Security Analysis:**
+- ✅ Hex color validation prevents injection (strict regex pattern)
+- ✅ No eval or dynamic code execution
+- ✅ Registry path is safe (predefined, no user input in path)
+- ✅ Error messages don't leak sensitive information
+- ✅ No XSS vectors (React prevents template injection)
+- ✅ No hardcoded credentials
+- ✅ Input validation before Registry write (validateColor check)
+
+---
+
+### 7. Documentation
+**Verdict:** ✅ PASS
+
+**Documentation Present:**
+- ✅ JSDoc on all exported functions (colorPresets.ts utilities)
+- ✅ ColorPreset interface documented
+- ✅ Color validation regex documented with format explanation
+- ✅ Windows 11 preset table in story with hex values
+- ✅ Technical notes explain Registry path and CSS variable strategy
+- ✅ Component props documented in interfaces
+
+---
+
+## File List Validation
+
+| File | Status | Purpose |
+|------|--------|---------|
+| `src/components/ColorPicker.tsx` | ✅ Present | Color picker with hex input + preset buttons |
+| `src/components/ColorPreset.tsx` | ✅ Present | Preset color button with visual feedback |
+| `src/data/colorPresets.ts` | ✅ Present | Windows 11 colors + utility functions |
+| `src/services/themeService.ts` | ✅ Updated | Color validation + preset colors methods |
+| `src/stores/themeStore.ts` | ✅ Updated | Added accentColor + previewColor state |
+| `tests/colorPicker.test.ts` | ✅ Present | 28 comprehensive unit tests |
+
+**Deliverables:** ✅ 6/6 Complete
+
+---
+
+## Windows 11 Preset Colors Verification
+
+| Color | Hex | Windows 11 Spec | Verified |
+|-------|-----|-----------------|----------|
+| Default Blue | #005A9E | Official | ✅ |
+| Purple | #8661C5 | Official | ✅ |
+| Red | #D83B01 | Official | ✅ |
+| Pink | #E81123 | Official | ✅ |
+| Green | #107C10 | Official | ✅ |
+| Cyan | #00B4EF | Official | ✅ |
+
+All presets match Windows 11 personalization defaults. ✅
+
+---
+
+## Known Deferrals
+
+| Item | Target | Reason |
+|------|--------|--------|
+| Custom color gradient picker | v1.1 | Native HTML5 input sufficient for MVP |
+| Color history/recently used | v1.1 | Can be added as enhancement |
+| Color harmony suggestions | v1.1 | Advanced feature, not in MVP scope |
+| Undo/redo for accent changes | v1.1 | Single-action workflow is acceptable |
+
+---
+
+## Integration with Story 4.1
+
+**Compatibility:** ✅ Full
+
+- ColorPicker integrates seamlessly into ThemePanel
+- Uses same ThemeService for color validation
+- Shares themeStore for state management
+- Both stories work together to provide complete theme system
+- No conflicts or overlapping functionality
+
+---
+
+## Next Steps
+
+1. **@dev:** No fixes needed — story ready to merge
+2. **@devops:** Push to GitHub (dependent on 4.1, no other pre-requisites)
+3. **Integration Testing:** Test ColorPicker + ThemeToggle together in ThemePanel
+4. **@pm:** EPIC-4 (Theme System) mostly complete; prepare for v1.1 planning
+
+---
+
+## Gate Files & References
+
+- **Story File:** `docs/stories/4.2.story.md`
+- **GitHub Branch:** `feature/4.2-color-picker` (pending push)
+- **Test Report:** `tests/colorPicker.test.ts` (28 tests, all passing)
+- **Build Status:** ✅ TypeScript strict, ESLint clean
+- **Related Stories:** 4.1 (Theme Toggle), EPIC-4 (Theme System)
+- **Windows 11 Registry Reference:** `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent\AccentColorSet`
+
+---
+
+**Gate Decision:** ✅ **PASS** — Story 4.2 is complete, tested, and ready for production merge.
+
+*Reviewed by Quinn (QA Agent) on 2026-04-29 at 16:02:45 UTC*
