@@ -3,6 +3,8 @@ import { useTaskbarStore } from '../stores/taskbarStore'
 import { PositionSelector } from './PositionSelector'
 import { TransparencySlider } from './TransparencySlider'
 import { ColorPicker } from './ColorPicker'
+import { SizeSelector } from './SizeSelector'
+import { AutoHideToggle } from './AutoHideToggle'
 
 export const TaskbarPanel: React.FC = () => {
   const {
@@ -125,10 +127,10 @@ export const TaskbarPanel: React.FC = () => {
   )
 
   /**
-   * Handle size change
+   * Handle size change (preset or custom)
    */
   const handleSizeChange = useCallback(
-    (newSize: 'small' | 'medium' | 'large') => {
+    (newSize: 'small' | 'default' | 'large' | number) => {
       try {
         setError(null)
         setSize(newSize)
@@ -194,25 +196,11 @@ export const TaskbarPanel: React.FC = () => {
 
       {/* Size Control Section */}
       <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-          Taskbar Size
-        </label>
-        <div className="flex gap-3">
-          {(['small', 'medium', 'large'] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => handleSizeChange(s)}
-              disabled={isApplying}
-              className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
-                size === s
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
-              } ${isApplying ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
-        </div>
+        <SizeSelector
+          currentSize={size}
+          onSizeChange={handleSizeChange}
+          disabled={isApplying}
+        />
       </div>
 
       {/* Transparency Slider Section */}
@@ -270,21 +258,11 @@ export const TaskbarPanel: React.FC = () => {
 
       {/* Auto-Hide Toggle Section */}
       <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={autoHide}
-            onChange={(e) => handleAutoHideChange(e.target.checked)}
-            disabled={isApplying}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-            Auto-Hide Taskbar
-          </span>
-        </label>
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Automatically hide taskbar when not in use, move mouse to bottom to show
-        </p>
+        <AutoHideToggle
+          enabled={autoHide}
+          onToggle={handleAutoHideChange}
+          disabled={isApplying}
+        />
       </div>
 
       {/* Status Message */}

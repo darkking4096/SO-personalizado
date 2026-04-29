@@ -56,7 +56,7 @@ const initialState: AppState = {
     position: 'bottom',
     transparency: 0,
     backgroundColor: '#000000',
-    size: 'medium',
+    size: 'default',
     visibility: true,
     autoHide: false,
   },

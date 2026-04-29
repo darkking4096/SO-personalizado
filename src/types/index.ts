@@ -41,11 +41,14 @@ export interface ThemeState {
 }
 
 // Taskbar types
+export type TaskbarSizePreset = 'small' | 'default' | 'large'
+export type TaskbarSize = TaskbarSizePreset | number // preset or custom pixel height
+
 export interface TaskbarState {
   position: 'top' | 'bottom' | 'left' | 'right'
   transparency: number
   backgroundColor: string
-  size: 'small' | 'medium' | 'large'
+  size: TaskbarSize
   visibility: boolean
   autoHide: boolean
 }

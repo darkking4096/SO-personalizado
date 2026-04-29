@@ -407,4 +407,137 @@ export class RegistryManager {
     console.log(`[RegistryManager] Restoring from backup: ${backupId}`)
     return false
   }
+
+  /**
+   * Get taskbar size (preset or custom in pixels)
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Size value: 'small' (32px), 'default' (48px), 'large' (64px), or custom number
+   */
+  static async getTaskbarSize(): Promise<'small' | 'default' | 'large' | number> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarSize'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] TaskbarSize not found, defaulting to default')
+        return 'default'
+      }
+
+      const sizeValue = String(value)
+
+      // Map preset sizes
+      const presetMap: Record<string, 'small' | 'default' | 'large'> = {
+        'small': 'small',
+        'default': 'default',
+        'large': 'large',
+        '32': 'small',
+        '48': 'default',
+        '64': 'large',
+      }
+
+      if (presetMap[sizeValue]) {
+        return presetMap[sizeValue]
+      }
+
+      // Try parsing as number (custom size in pixels)
+      const numValue = parseInt(sizeValue, 10)
+      if (!isNaN(numValue) && numValue >= 16 && numValue <= 256) {
+        return numValue
+      }
+
+      return 'default'
+    } catch (error) {
+      console.error('[RegistryManager] Error reading taskbar size:', error)
+      return 'default'
+    }
+  }
+
+  /**
+   * Set taskbar size (preset or custom in pixels)
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param size Size preset ('small'=32px, 'default'=48px, 'large'=64px) or custom pixel value
+   * @returns Success status
+   */
+  static async setTaskbarSize(size: 'small' | 'default' | 'large' | number): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarSize'
+
+      // Map preset sizes to pixel values
+      const sizeMap: Record<string, number> = {
+        'small': 32,
+        'default': 48,
+        'large': 64,
+      }
+
+      const pixelValue = typeof size === 'string' ? sizeMap[size] : Math.min(256, Math.max(16, size))
+
+      const success = await this.write(hive, path, key, pixelValue, 'dword')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting taskbar size:', error)
+      return false
+    }
+  }
+
+  /**
+   * Get auto-hide status
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Auto-hide enabled status
+   */
+  static async getAutoHideStatus(): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'AutoHide'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] AutoHide not found, defaulting to false')
+        return false
+      }
+
+      const autoHideValue = parseInt(String(value), 10)
+      return autoHideValue === 1
+    } catch (error) {
+      console.error('[RegistryManager] Error reading auto-hide status:', error)
+      return false
+    }
+  }
+
+  /**
+   * Set auto-hide status
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param enabled Auto-hide enabled status
+   * @returns Success status
+   */
+  static async setAutoHide(enabled: boolean): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'AutoHide'
+
+      const value = enabled ? 1 : 0
+      const success = await this.write(hive, path, key, value, 'dword')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting auto-hide:', error)
+      return false
+    }
+  }
 }
