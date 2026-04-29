@@ -4,10 +4,13 @@ import { TaskbarState } from '../types'
 interface TaskbarStoreState extends TaskbarState {
   isApplying: boolean
   error: string | null
+  previewBackgroundColor: string
 
   // Actions
   setPosition: (position: TaskbarState['position']) => void
-  setTransparency: (transparency: boolean) => void
+  setTransparency: (transparency: number) => void
+  setBackgroundColor: (color: string) => void
+  setPreviewBackgroundColor: (color: string) => void
   setSize: (size: TaskbarState['size']) => void
   setVisibility: (visibility: boolean) => void
   setAutoHide: (autoHide: boolean) => void
@@ -18,13 +21,14 @@ interface TaskbarStoreState extends TaskbarState {
 
 const initialState = {
   position: 'bottom' as const,
-  transparency: false,
-  color: undefined,
+  transparency: 0,
+  backgroundColor: '#000000',
   size: 'medium' as const,
   visibility: true,
   autoHide: false,
   isApplying: false,
   error: null,
+  previewBackgroundColor: '#000000',
 }
 
 export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
@@ -34,6 +38,8 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
 
   setPosition: (position) => set({ position }),
   setTransparency: (transparency) => set({ transparency }),
+  setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
+  setPreviewBackgroundColor: (previewBackgroundColor) => set({ previewBackgroundColor }),
   setSize: (size) => set({ size }),
   setVisibility: (visibility) => set({ visibility }),
   setAutoHide: (autoHide) => set({ autoHide }),
@@ -42,12 +48,13 @@ export const useTaskbarStore = create<TaskbarStoreState>((set) => ({
   reset: () =>
     set({
       position: 'bottom',
-      transparency: false,
-      color: undefined,
+      transparency: 0,
+      backgroundColor: '#000000',
       size: 'medium',
       visibility: true,
       autoHide: false,
       isApplying: false,
       error: null,
+      previewBackgroundColor: '#000000',
     }),
 }))

@@ -54,7 +54,8 @@ const initialState: AppState = {
   },
   taskbar: {
     position: 'bottom',
-    transparency: false,
+    transparency: 0,
+    backgroundColor: '#000000',
     size: 'medium',
     visibility: true,
     autoHide: false,

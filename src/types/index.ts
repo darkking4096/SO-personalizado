@@ -43,8 +43,8 @@ export interface ThemeState {
 // Taskbar types
 export interface TaskbarState {
   position: 'top' | 'bottom' | 'left' | 'right'
-  transparency: boolean
-  color?: string
+  transparency: number
+  backgroundColor: string
   size: 'small' | 'medium' | 'large'
   visibility: boolean
   autoHide: boolean

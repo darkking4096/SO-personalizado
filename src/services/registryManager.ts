@@ -241,6 +241,132 @@ export class RegistryManager {
   }
 
   /**
+   * Get taskbar transparency value (0-100)
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Transparency value 0-100
+   */
+  static async getTaskbarTransparency(): Promise<number> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarTransparency'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] TaskbarTransparency not found, defaulting to 0')
+        return 0
+      }
+
+      const transparencyValue = parseInt(String(value), 10)
+      return Math.min(100, Math.max(0, transparencyValue))
+    } catch (error) {
+      console.error('[RegistryManager] Error reading taskbar transparency:', error)
+      return 0
+    }
+  }
+
+  /**
+   * Set taskbar transparency value (0-100)
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param transparency Value 0-100
+   * @returns Success status
+   */
+  static async setTaskbarTransparency(transparency: number): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarTransparency'
+
+      const value = Math.min(100, Math.max(0, transparency))
+
+      const success = await this.write(hive, path, key, value, 'dword')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting taskbar transparency:', error)
+      return false
+    }
+  }
+
+  /**
+   * Get taskbar background color (hex string)
+   * Reads from HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @returns Color value as hex string
+   */
+  static async getTaskbarColor(): Promise<string> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarColor'
+
+      const value = await this.read(hive, path, key)
+
+      if (value === null || value === undefined) {
+        console.warn('[RegistryManager] TaskbarColor not found, defaulting to #000000')
+        return '#000000'
+      }
+
+      const colorValue = String(value)
+
+      // Convert BGR format to hex if needed
+      if (colorValue.match(/^[0-9]{6,8}$/)) {
+        const bgr = parseInt(colorValue, 16)
+        const b = (bgr >> 16) & 0xff
+        const g = (bgr >> 8) & 0xff
+        const r = bgr & 0xff
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase()
+      }
+
+      return colorValue.startsWith('#') ? colorValue : `#${colorValue}`
+    } catch (error) {
+      console.error('[RegistryManager] Error reading taskbar color:', error)
+      return '#000000'
+    }
+  }
+
+  /**
+   * Set taskbar background color (hex string)
+   * Writes to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+   * @param color Color value as hex string
+   * @returns Success status
+   */
+  static async setTaskbarColor(color: string): Promise<boolean> {
+    try {
+      const hive = 'HKEY_CURRENT_USER'
+      const path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced'
+      const key = 'TaskbarColor'
+
+      // Validate hex color format
+      if (!color.match(/^#[0-9A-Fa-f]{6}$/)) {
+        console.error('[RegistryManager] Invalid color format:', color)
+        return false
+      }
+
+      // Convert hex to BGR format for Windows
+      const r = parseInt(color.slice(1, 3), 16)
+      const g = parseInt(color.slice(3, 5), 16)
+      const b = parseInt(color.slice(5, 7), 16)
+      const bgrValue = ((b << 16) | (g << 8) | r).toString(16).padStart(6, '0')
+
+      const success = await this.write(hive, path, key, bgrValue, 'string')
+
+      if (success) {
+        await this.restartExplorer()
+      }
+
+      return success
+    } catch (error) {
+      console.error('[RegistryManager] Error setting taskbar color:', error)
+      return false
+    }
+  }
+
+  /**
    * Set taskbar property
    * @param property Property name
    * @param value New value
@@ -249,6 +375,12 @@ export class RegistryManager {
   static async setTaskbarProperty(property: string, value: unknown): Promise<boolean> {
     if (property === 'position' && typeof value === 'string') {
       return this.setTaskbarPosition(value as 'bottom' | 'left' | 'right' | 'top')
+    }
+    if (property === 'transparency' && typeof value === 'number') {
+      return this.setTaskbarTransparency(value)
+    }
+    if (property === 'color' && typeof value === 'string') {
+      return this.setTaskbarColor(value)
     }
     // TODO: Implement writing other taskbar properties
     console.log(`[RegistryManager] Setting taskbar ${property} = ${value}`)

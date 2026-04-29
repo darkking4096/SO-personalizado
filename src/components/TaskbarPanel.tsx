@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect } from 'react'
 import { useTaskbarStore } from '../stores/taskbarStore'
 import { PositionSelector } from './PositionSelector'
+import { TransparencySlider } from './TransparencySlider'
+import { ColorPicker } from './ColorPicker'
 
 export const TaskbarPanel: React.FC = () => {
   const {
     position,
     transparency,
+    backgroundColor,
+    previewBackgroundColor,
     size,
     visibility,
     autoHide,
@@ -13,6 +17,8 @@ export const TaskbarPanel: React.FC = () => {
     error,
     setPosition,
     setTransparency,
+    setBackgroundColor,
+    setPreviewBackgroundColor,
     setSize,
     setVisibility,
     setAutoHide,
@@ -66,19 +72,56 @@ export const TaskbarPanel: React.FC = () => {
   )
 
   /**
-   * Handle transparency toggle
+   * Handle transparency change (0-100)
    */
   const handleTransparencyChange = useCallback(
-    (newTransparency: boolean) => {
+    (newTransparency: number) => {
       try {
         setError(null)
+        setPreviewBackgroundColor(backgroundColor)
         setTransparency(newTransparency)
         console.log('[TaskbarPanel] Applied transparency:', newTransparency)
       } catch (err) {
         setError('Failed to apply transparency setting')
       }
     },
-    [setTransparency, setError]
+    [setTransparency, setPreviewBackgroundColor, backgroundColor, setError]
+  )
+
+  /**
+   * Handle background color change
+   */
+  const handleBackgroundColorChange = useCallback(
+    (newColor: string) => {
+      try {
+        setError(null)
+        setPreviewBackgroundColor(newColor)
+        console.log('[TaskbarPanel] Applied background color:', newColor)
+      } catch (err) {
+        setError('Failed to apply background color')
+      }
+    },
+    [setPreviewBackgroundColor, setError]
+  )
+
+  /**
+   * Apply color changes to registry
+   */
+  const handleApplyColor = useCallback(
+    async () => {
+      try {
+        setError(null)
+        setIsApplying(true)
+        setBackgroundColor(previewBackgroundColor)
+        console.log('[TaskbarPanel] Applied background color:', previewBackgroundColor)
+      } catch (err) {
+        setError('Failed to apply background color')
+        setPreviewBackgroundColor(backgroundColor)
+      } finally {
+        setIsApplying(false)
+      }
+    },
+    [backgroundColor, previewBackgroundColor, setBackgroundColor, setPreviewBackgroundColor, setIsApplying, setError]
   )
 
   /**
@@ -172,22 +215,37 @@ export const TaskbarPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Transparency Toggle Section */}
+      {/* Transparency Slider Section */}
       <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={transparency}
-            onChange={(e) => handleTransparencyChange(e.target.checked)}
-            disabled={isApplying}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-            Enable Taskbar Transparency
-          </span>
-        </label>
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Makes the taskbar semi-transparent to see content behind it
+        <TransparencySlider
+          value={transparency}
+          onChange={handleTransparencyChange}
+          disabled={isApplying}
+          label="Taskbar Transparency"
+        />
+        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          Adjust transparency level: 0% = Opaque (solid), 100% = Fully transparent (invisible)
+        </p>
+      </div>
+
+      {/* Background Color Section */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+        <ColorPicker
+          value={previewBackgroundColor}
+          onChange={handleBackgroundColorChange}
+          disabled={isApplying}
+          label="Taskbar Background Color"
+          showPreview={true}
+        />
+        <button
+          onClick={handleApplyColor}
+          disabled={isApplying || previewBackgroundColor === backgroundColor}
+          className="mt-3 w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isApplying ? '⏳ Applying...' : 'Apply Color'}
+        </button>
+        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          Choose a color for the taskbar background. Color applies instantly with preview.
         </p>
       </div>
 
